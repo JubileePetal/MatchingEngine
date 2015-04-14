@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 
 public class Greeter {
 	
+	/***Test    */
+	
 	private ServerSocket serverSocket;
 	private String hostname;
 	private int portNumber;
@@ -45,8 +47,8 @@ public class Greeter {
 	            capitalizedSentence = clientMessage.toUpperCase() + '\n';
 	            outToClient.writeBytes(capitalizedSentence);
 	  
-	            Order order = gson.fromJson(clientMessage,Order.class);
-	            System.out.println(order.message);
+	            //Order order = gson.fromJson(clientMessage,Order.class);
+	            //System.out.println(order.message);
 	            
 	            
 	            
