@@ -6,23 +6,96 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import com.google.gson.Gson;
 
 
-public class Greeter {
+public class Greeter implements Runnable {
 	
-	/***Test    */
+	private HashMap<String,ClientHandler> admins;
+	private HashMap<String,ClientHandler> traders;
+	private HashMap<String,ClientHandler> isvrs;
+	private HashMap<String,ClientHandler> regulators;
 	
-	private ServerSocket serverSocket;
-	private String hostname;
-	private int portNumber;
+	private ServerSocket welcomeSocket;
+	private BufferedReader inFromClient;
+	private DataOutputStream outToClient;
+	
+
 	
 	public Greeter() {
-		// TODO Auto-generated constructor stub
+		
+		if(createWelcomeSocket()){
+			run();
+		}
+	}
+
+	public boolean createWelcomeSocket(){
+		
+		try {
+			welcomeSocket = new ServerSocket(1337);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Could not create welcomeSocket in Greeter.");
+			return false;
+		}
+			
+		return true;
+	}
+	
+	public void createNewClientHandler(){
+		
 	}
 	
 	
+	@Override
+	public void run() {
+		
+		
+		while(true){
+			
+			Socket newClientSocket = waitForNewClients();
+			
+			if(newClientSocket != null){
+				
+				ClientHandler newClientHandler = new ClientHandler();
+				
+			}
+
+			
+		}
+		
+		
+	}
+	
+	
+	
+	public void Greet(){
+		// TODO Greet until otherwise is true.
+	}
+	
+	public void Goodbye(){
+		//TODO Shut down
+		
+	}
+	
+	private Socket waitForNewClients(){
+		
+		Socket socket = null;
+		try {
+			 socket = welcomeSocket.accept();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Could not accept new "
+					+ "connection from client in Greeter.");
+		}
+		
+		return socket;
+		
+	}
+	/**
 	public void createSocket(){
 	
 		try {
@@ -67,5 +140,5 @@ public class Greeter {
 		}
 		
 
-	}
+	} **/
 }
