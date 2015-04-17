@@ -19,29 +19,23 @@ public class Greeter implements Runnable {
 	private HashMap<String,ClientHandler> regulators;
 	
 	private ServerSocket welcomeSocket;
-	private BufferedReader inFromClient;
-	private DataOutputStream outToClient;
-	
 
 	
 	public Greeter() {
 		
-		if(createWelcomeSocket()){
-			run();
-		}
-	}
+	}	
 
-	public boolean createWelcomeSocket(){
+	public void createWelcomeSocket(){
 		
 		try {
 			welcomeSocket = new ServerSocket(1337);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Could not create welcomeSocket in Greeter.");
-			return false;
+			System.exit(-1);
 		}
 			
-		return true;
+
 	}
 	
 	public void createNewClientHandler(){
@@ -59,7 +53,8 @@ public class Greeter implements Runnable {
 			
 			if(newClientSocket != null){
 				
-				ClientHandler newClientHandler = new ClientHandler();
+				ClientHandler newClientHandler = 
+						new ClientHandler(newClientSocket);
 				
 			}
 
@@ -115,6 +110,8 @@ public class Greeter implements Runnable {
 	            BufferedReader inFromClient =
 	               new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	            DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
+	            
+	            
 	            clientMessage = inFromClient.readLine();
 	            System.out.println("Received: " + clientMessage);
 	            capitalizedSentence = clientMessage.toUpperCase() + '\n';
