@@ -48,7 +48,10 @@ public class Greeter {
 	            outToClient.writeBytes(capitalizedSentence);
 	  
 	            Order order = gson.fromJson(clientMessage,Order.class);
-	            System.out.println(order.message);
+	            System.out.println(order.getMessage());
+	            Currency curr = order.currency;
+	            Instrument inst = order.instrument;
+	            System.out.println(inst.name);
 	            
 	            
 	            
