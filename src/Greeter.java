@@ -46,17 +46,21 @@ public class Greeter implements Runnable {
 	@Override
 	public void run() {
 		
+		createWelcomeSocket();
 		
 		while(true){
 			
 			Socket newClientSocket = waitForNewClients();
 			
 			if(newClientSocket != null){
-				
+				System.out.println("Creating new ClientHandler.");
 				ClientHandler newClientHandler = 
 						new ClientHandler(newClientSocket);
+			
+				(new Thread(newClientHandler)).start();
 				
 			}
+			
 
 			
 		}
@@ -79,6 +83,7 @@ public class Greeter implements Runnable {
 		
 		Socket socket = null;
 		try {
+			System.out.println("Waiting for clients...");
 			 socket = welcomeSocket.accept();
 			
 		} catch (IOException e) {

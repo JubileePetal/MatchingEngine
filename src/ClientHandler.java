@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import models.Order;
+
 import com.google.gson.Gson;
 import com.sun.tools.javac.util.List;
 
@@ -20,15 +22,21 @@ public class ClientHandler implements Runnable {
 	
 	public ClientHandler(Socket clientSocket){
 		
+		
 		socket = clientSocket;
+		
 	}
+	
 	
 	public boolean setupCommunicationTools(){
 			
 		gson = new Gson();
-		
+			
+			inFromClient = null;
+			outToClient  = null;
+			
         try {
-			BufferedReader inFromClient =
+			inFromClient =
 					new BufferedReader
 						(new InputStreamReader(socket.getInputStream()));
 			
@@ -40,7 +48,7 @@ public class ClientHandler implements Runnable {
 		}
 
         try {
-			DataOutputStream outToClient =
+			outToClient =
 					new DataOutputStream(socket.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -59,25 +67,33 @@ public class ClientHandler implements Runnable {
 		
 		if(setupCommunicationTools()){
 			
+			System.out.println("Communication Tools up!");
 			while(true){
 				
 	/*******************TEST CODE******************/
 				
+				
+				
 				String clientMessage = null;
+				
 				try {
+					
 					 clientMessage = inFromClient.readLine();
-		
+					 System.out.println("New message.");
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				
-			
+		
+				Order order = gson.fromJson(clientMessage,Order.class);
+				System.out.println("Client message: " + clientMessage);
 				
 				
 	/*********************************************/
 				
 				
-			}
+			}//while
 			
 		}
 		
