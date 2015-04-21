@@ -55,7 +55,7 @@ public class Greeter implements Runnable {
 			if(newClientSocket != null){
 				System.out.println("Creating new ClientHandler.");
 				ClientHandler newClientHandler = 
-						new ClientHandler(newClientSocket);
+						new ClientHandler(newClientSocket, this);
 			
 				(new Thread(newClientHandler)).start();
 				
@@ -67,8 +67,6 @@ public class Greeter implements Runnable {
 		
 		
 	}
-	
-	
 	
 	public void Greet(){
 		// TODO Greet until otherwise is true.
@@ -97,12 +95,30 @@ public class Greeter implements Runnable {
 		
 	}
 	
+	public void addTrader(String username, ClientHandler client){
+		
+		traders.put(username, client);
+		
+	}
 	
+	public void addAdmin(String username, ClientHandler client){
+		
+		admins.put(username, client);
+	}
+
+	public void addIsvr(String username, ClientHandler client){
+		
+		isvrs.put(username, client);
+	}
+
+	public void addRegulator(String username, ClientHandler client){
+		
+		regulators.put(username, client);
+	}
 	
-	
-	/**
+
 	public void createSocket(){
-	
+	/**
 		try {
 			serverSocket = new ServerSocket(1337);
 			
@@ -146,6 +162,6 @@ public class Greeter implements Runnable {
 			e.printStackTrace();
 		}
 		
-
-	} **/
+	**/
+	} 
 }

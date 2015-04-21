@@ -7,6 +7,7 @@ import java.net.Socket;
 import models.Message;
 import models.OpCodes;
 import models.Order;
+import models.User;
 
 import com.google.gson.Gson;
 import com.sun.tools.javac.util.List;
@@ -19,18 +20,17 @@ public class ClientHandler implements Runnable {
 	private BufferedReader inFromClient;
 	private DataOutputStream outToClient;
 	private boolean connected;
+	private Greeter greeter;
 	
 	
 	
-	
-	public ClientHandler(Socket clientSocket){
+	public ClientHandler(Socket clientSocket, Greeter greetedBy){
 		
-		
+		greeter = greetedBy;
 		socket = clientSocket;
 		
 	}
-	
-	
+		
 	public boolean setupCommunicationTools(){
 			
 		gson = new Gson();
@@ -85,7 +85,7 @@ public class ClientHandler implements Runnable {
 			
 		}else{
 			
-			message = gson.fromJson(clientMessage,Message.class);
+			message = unpackMessage(clientMessage);
 			
 		}
 		
@@ -94,9 +94,50 @@ public class ClientHandler implements Runnable {
 		return message;
 		
 	}
+		
+	public Message unpackMessage(String clientMessage){
+		
+		return gson.fromJson(clientMessage,Message.class);
+	}
 
-
-	@Override
+	public void addClient(Message message){
+		
+		User user =  gson.fromJson(message.getMessage(),User.class);
+		
+		/** add user to the right list in greeter*/
+		switch (user.getUserType()) {
+			case OpCodes.TRADER:
+				greeter.addTrader(user.getUsername(), this);
+				break;
+				
+			case OpCodes.REGULATOR:
+				greeter.addRegulator(user.getUsername(), this);
+				break;
+				
+			case OpCodes.ADMIN:
+				greeter.addAdmin(user.getUsername(), this);
+				break;
+			
+			case OpCodes.ISVR:
+				greeter.addIsvr(user.getUsername(), this);
+				break;
+			
+			default:
+				
+				break;
+			}
+		
+			
+			
+	}
+	
+	
+	
+	private void loginResponse(int loginStatus){
+		
+		
+	}
+	
 	public void run() {
 		
 		if(setupCommunicationTools()){
@@ -111,29 +152,26 @@ public class ClientHandler implements Runnable {
 				
 				if(connected){
 					
+					/*********PRINT STUFF********/
 					System.out.println("Message type : "
 					+ 	message.getType());
 					System.out.println("Message message:  "
 					+ message.getMessage());	
+					/*****************************/
 					
 					switch (message.getType()) {
 						
 						case OpCodes.LOG_IN:
-								//TODO Call login method
-						
+							addClient(message);
 							break;
+							
 						case OpCodes.LOG_OUT:
 								//TODO Call logout method
 							break;
 							
-						case OpCodes.BUY_ORDER:
+						case OpCodes.ORDER:
 								//TODO Call Order method
 							break;
-							
-						case OpCodes.SELL_ORDER:
-								//TODO Call Order method
-							break;
-						
 					
 						default:
 							break;
