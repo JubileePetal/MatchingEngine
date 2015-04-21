@@ -85,6 +85,7 @@ public class Greeter implements Runnable {
 		try {
 			System.out.println("Waiting for clients...");
 			 socket = welcomeSocket.accept();
+			 
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -95,6 +96,10 @@ public class Greeter implements Runnable {
 		return socket;
 		
 	}
+	
+	
+	
+	
 	/**
 	public void createSocket(){
 	

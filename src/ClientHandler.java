@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import models.Message;
 import models.Order;
 
 import com.google.gson.Gson;
@@ -16,6 +17,7 @@ public class ClientHandler implements Runnable {
 	private Gson gson;
 	private BufferedReader inFromClient;
 	private DataOutputStream outToClient;
+	private boolean connected;
 	
 	
 	
@@ -60,6 +62,37 @@ public class ClientHandler implements Runnable {
 		return true;
 	}
 
+	public Message getMessage(){
+		
+		String clientMessage = null;
+		Message message = null;
+		
+		try {
+			
+			 clientMessage = inFromClient.readLine();
+			 System.out.println("New message.");
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Could not read message from client "
+					+ "in ClientHandler.");
+		}
+		
+		if(clientMessage == null){
+			
+			connected = false;
+			
+		}else{
+			
+			message = gson.fromJson(clientMessage,Message.class);
+			
+		}
+		
+		
+		
+		return message;
+		
+	}
 
 
 	@Override
@@ -68,12 +101,27 @@ public class ClientHandler implements Runnable {
 		if(setupCommunicationTools()){
 			
 			System.out.println("Communication Tools up!");
-			while(true){
+			
+			connected = true;
+			while(connected){
+				
+			//TODO Get a user message with user types
+			Message message = getMessage();
+			System.out.println("Message type : " + 	message.getType());
+			System.out.println("Message message:  " + message.getMessage());
+		
+				
+				
+			//TODO Add the user to the greeters list of users
+				
+			//TODO Wait for new messages from the user
+				
+				
 				
 	/*******************TEST CODE******************/
 				
 				
-				
+				/**
 				String clientMessage = null;
 				
 				try {
