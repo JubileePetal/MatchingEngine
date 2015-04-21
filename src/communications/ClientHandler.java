@@ -1,3 +1,4 @@
+package communications;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -35,16 +36,16 @@ public class ClientHandler implements Runnable {
 			
 		gson = new Gson();
 			
-			inFromClient = null;
-			outToClient  = null;
+		inFromClient = null;
+		outToClient  = null;
+		
+		boolean readerOK = setupClientReader();
+		boolean writerOK = setupClientWriter();
 			
-			boolean readerOK = setupClientReader();
-			boolean writerOK = setupClientWriter();
-			
-			return (readerOK && writerOK);
+		return (readerOK && writerOK);
 	}
 
-	private boolean setupClientWriter() {
+	public boolean setupClientWriter() {
         
 		try {
 			outToClient =
@@ -60,7 +61,7 @@ public class ClientHandler implements Runnable {
 		
 	}
 
-	private boolean setupClientReader() {
+	public boolean setupClientReader() {
         try {
 			inFromClient =
 					new BufferedReader
@@ -137,7 +138,6 @@ public class ClientHandler implements Runnable {
 			
 			
 	}
-	
 	
 	private void loginResponse(int loginStatus){
 		

@@ -1,3 +1,4 @@
+package communications;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -41,10 +42,6 @@ public class Greeter implements Runnable {
 		}
 			
 
-	}
-	
-	public void createNewClientHandler(){
-		
 	}
 	
 	@Override

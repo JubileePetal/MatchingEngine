@@ -1,4 +1,4 @@
-package Tests;
+package tests;
 import static org.junit.Assert.*;
 
 import java.io.BufferedReader;
@@ -19,4 +19,5 @@ public class GreeterTest {
 			
 	}
 
+	
 }
