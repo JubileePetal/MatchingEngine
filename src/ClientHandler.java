@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import models.Message;
+import models.OpCodes;
 import models.Order;
 
 import com.google.gson.Gson;
@@ -105,12 +106,47 @@ public class ClientHandler implements Runnable {
 			connected = true;
 			while(connected){
 				
-			//TODO Get a user message with user types
-			Message message = getMessage();
-			System.out.println("Message type : " + 	message.getType());
-			System.out.println("Message message:  " + message.getMessage());
-		
 				
+				Message message = getMessage();
+				
+				if(connected){
+					
+					System.out.println("Message type : "
+					+ 	message.getType());
+					System.out.println("Message message:  "
+					+ message.getMessage());	
+					
+					switch (message.getType()) {
+						
+						case OpCodes.LOG_IN:
+								//TODO Call login method
+						
+							break;
+						case OpCodes.LOG_OUT:
+								//TODO Call logout method
+							break;
+							
+						case OpCodes.BUY_ORDER:
+								//TODO Call Order method
+							break;
+							
+						case OpCodes.SELL_ORDER:
+								//TODO Call Order method
+							break;
+						
+					
+						default:
+							break;
+					}	
+					
+				}//if
+
+					
+				
+				
+			//TODO Get a user message with user types
+	
+
 				
 			//TODO Add the user to the greeters list of users
 				
