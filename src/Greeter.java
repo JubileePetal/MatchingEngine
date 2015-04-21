@@ -23,6 +23,11 @@ public class Greeter implements Runnable {
 	
 	public Greeter() {
 		
+		
+		admins 		= new HashMap<String,ClientHandler>();
+		traders 	= new HashMap<String,ClientHandler>();	
+		isvrs 		= new HashMap<String,ClientHandler>();	
+		regulators	= new HashMap<String,ClientHandler>();	
 	}	
 
 	public void createWelcomeSocket(){
@@ -41,7 +46,6 @@ public class Greeter implements Runnable {
 	public void createNewClientHandler(){
 		
 	}
-	
 	
 	@Override
 	public void run() {
@@ -65,15 +69,6 @@ public class Greeter implements Runnable {
 			
 		}
 		
-		
-	}
-	
-	public void Greet(){
-		// TODO Greet until otherwise is true.
-	}
-	
-	public void Goodbye(){
-		//TODO Shut down
 		
 	}
 	
@@ -116,52 +111,4 @@ public class Greeter implements Runnable {
 		regulators.put(username, client);
 	}
 	
-
-	public void createSocket(){
-	/**
-		try {
-			serverSocket = new ServerSocket(1337);
-			
-			while(true){
-				
-				Socket socket = serverSocket.accept();
-				System.out.println("Katt");
-				String clientMessage;
-				String capitalizedSentence;
-				
-				Gson gson = new Gson();
-									
-				
-				
-	            BufferedReader inFromClient =
-	               new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	            DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
-	            
-	            
-	            clientMessage = inFromClient.readLine();
-	            System.out.println("Received: " + clientMessage);
-	            capitalizedSentence = clientMessage.toUpperCase() + '\n';
-	            outToClient.writeBytes(capitalizedSentence);
-	  
-	            Order order = gson.fromJson(clientMessage,Order.class);
-	            System.out.println(order.getMessage());
-	            Currency curr = order.currency;
-	            Instrument inst = order.instrument;
-	            System.out.println(inst.name);
-	            
-	            
-	            
-			}	
-			
-			
-			
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	**/
-	} 
 }

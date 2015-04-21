@@ -21,7 +21,7 @@ public class ClientHandler implements Runnable {
 	private DataOutputStream outToClient;
 	private boolean connected;
 	private Greeter greeter;
-	
+	private String username;
 	
 	
 	public ClientHandler(Socket clientSocket, Greeter greetedBy){
@@ -38,6 +38,29 @@ public class ClientHandler implements Runnable {
 			inFromClient = null;
 			outToClient  = null;
 			
+			boolean readerOK = setupClientReader();
+			boolean writerOK = setupClientWriter();
+			
+			return (readerOK && writerOK);
+	}
+
+	private boolean setupClientWriter() {
+        
+		try {
+			outToClient =
+					new DataOutputStream(socket.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Could not set up DataOutputStream "
+					+ "outToClient in ClientHandler");
+			return false;
+		}
+		
+		return true;
+		
+	}
+
+	private boolean setupClientReader() {
         try {
 			inFromClient =
 					new BufferedReader
@@ -49,24 +72,101 @@ public class ClientHandler implements Runnable {
 					+ " in ClientHandler");
 			return false;
 		}
-
-        try {
-			outToClient =
-					new DataOutputStream(socket.getOutputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Could not set up DataOutputStream "
-					+ "outToClient in ClientHandler");
-			return false;
-		}
 		
-		return true;
+        return true;
 	}
 
-	public Message getMessage(){
+	public Message receiveMessage(){
+		
+		String clientMessage;
+		Message message = null;
+		clientMessage = readFromClient();
+		
+		if(clientMessage == null){
+			
+			connected = false;
+			System.out.println("Client disconnected.");
+			
+		}else{
+			
+			message = unpackMessage(clientMessage);
+			
+		}
+		return message;
+		
+	}
+
+	public Message unpackMessage(String clientMessage){
+		
+		return gson.fromJson(clientMessage,Message.class);
+	}
+
+	public void addClient(Message message){
+		
+		User user =  gson.fromJson(message.getMessage(),User.class);
+		this.username = user.getUsername();
+		
+		/** add user to the right list in greeter*/
+		switch (user.getUserType()) {
+			case OpCodes.TRADER:
+				greeter.addTrader(user.getUsername(), this);
+				System.out.println("Trader accepted.");
+				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				break;
+				
+			case OpCodes.REGULATOR:
+				greeter.addRegulator(user.getUsername(), this);
+				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				break;
+				
+			case OpCodes.ADMIN:
+				greeter.addAdmin(user.getUsername(), this);
+				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				break;
+			
+			case OpCodes.ISVR:
+				greeter.addIsvr(user.getUsername(), this);
+				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				break;
+			
+			default:
+				loginResponse(OpCodes.LOG_IN_REJECTED);
+				break;
+			}
+		
+			
+			
+	}
+	
+	
+	private void loginResponse(int loginStatus){
+		
+		Message message = new Message();
+		message.setType(loginStatus);
+		
+		String stringMessage = gson.toJson(message);
+		
+		writeToClient(stringMessage);
+		
+
+		
+	}
+	
+	private void writeToClient(String stringMessage) {
+			
+		try {
+			outToClient.writeBytes(stringMessage + '\n');
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("Could not writeToClient in ClientHandler");
+
+		}
+		
+	}
+	
+	private String readFromClient() {
 		
 		String clientMessage = null;
-		Message message = null;
 		
 		try {
 			
@@ -78,66 +178,9 @@ public class ClientHandler implements Runnable {
 			System.out.println("Could not read message from client "
 					+ "in ClientHandler.");
 		}
-		
-		if(clientMessage == null){
-			
-			connected = false;
-			
-		}else{
-			
-			message = unpackMessage(clientMessage);
-			
-		}
-		
-		
-		
-		return message;
-		
-	}
-		
-	public Message unpackMessage(String clientMessage){
-		
-		return gson.fromJson(clientMessage,Message.class);
+		return clientMessage;
 	}
 
-	public void addClient(Message message){
-		
-		User user =  gson.fromJson(message.getMessage(),User.class);
-		
-		/** add user to the right list in greeter*/
-		switch (user.getUserType()) {
-			case OpCodes.TRADER:
-				greeter.addTrader(user.getUsername(), this);
-				break;
-				
-			case OpCodes.REGULATOR:
-				greeter.addRegulator(user.getUsername(), this);
-				break;
-				
-			case OpCodes.ADMIN:
-				greeter.addAdmin(user.getUsername(), this);
-				break;
-			
-			case OpCodes.ISVR:
-				greeter.addIsvr(user.getUsername(), this);
-				break;
-			
-			default:
-				
-				break;
-			}
-		
-			
-			
-	}
-	
-	
-	
-	private void loginResponse(int loginStatus){
-		
-		
-	}
-	
 	public void run() {
 		
 		if(setupCommunicationTools()){
@@ -148,7 +191,7 @@ public class ClientHandler implements Runnable {
 			while(connected){
 				
 				
-				Message message = getMessage();
+				Message message = receiveMessage();
 				
 				if(connected){
 					
