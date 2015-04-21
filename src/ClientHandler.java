@@ -12,7 +12,7 @@ import models.User;
 import com.google.gson.Gson;
 
 
-
+/**Test comment*/
 public class ClientHandler implements Runnable {
 
 	private Socket socket;
