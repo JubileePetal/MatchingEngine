@@ -14,7 +14,7 @@ public class Main {
 		//(new Thread(greeter)).start();
 		Initializer initializer = new Initializer();
 		initializer.setUpArchive();
-		initializer.setUpOrderBooks();
+		initializer.setUpLibrary();
 		initializer.setupGreeter();
 		initializer.startGreeter();
 	

@@ -16,6 +16,8 @@ public class Initializer {
 	private Librarian orderbooks;
 	private ArrayList<Instrument> instruments;
 	
+	private Librarian librarian;
+	
 	public Initializer() {
 		// TODO Auto-generated constructor stub
 	}
@@ -34,9 +36,9 @@ public class Initializer {
 		
 	}
 	
-	public void setUpOrderBooks(){
+	public void setUpLibrary(){
 		
-		Librarian librarian = new Librarian();
+		librarian = new Librarian();
 		
 		for (Instrument i : instruments){
 			
@@ -48,14 +50,15 @@ public class Initializer {
 	
 	public void setupGreeter(){
 		
-		greeter = new Greeter();
+		greeter = new Greeter(librarian);
 		greeter.setInstruments(instruments);
 	}
 	
 	public void startGreeter(){
 		(new Thread(greeter)).start();
 	}
-
+	
+	
 
 
 }

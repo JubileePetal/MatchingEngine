@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import model.Librarian;
 import models.Instrument;
 
 import com.google.gson.Gson;
@@ -22,14 +23,16 @@ public class Greeter implements Runnable {
 	private HashMap<String,ClientHandler> isvrs;
 	private HashMap<String,ClientHandler> regulators;
 	
+	private Librarian librarian;
 	private ArrayList<Instrument> instruments;
 	
 	
 	private ServerSocket welcomeSocket;
 
 	
-	public Greeter() {
+	public Greeter(Librarian librarian) {
 		
+		this.librarian = librarian;
 		
 		admins 		= new HashMap<String,ClientHandler>();
 		traders 	= new HashMap<String,ClientHandler>();	
@@ -60,9 +63,10 @@ public class Greeter implements Runnable {
 			Socket newClientSocket = waitForNewClients();
 			
 			if(newClientSocket != null){
-				System.out.println("Creating new ClientHandler.");
 				ClientHandler newClientHandler = 
 						new ClientHandler(newClientSocket, this);
+				
+				newClientHandler.addObserver(librarian);
 			
 				(new Thread(newClientHandler)).start();
 				

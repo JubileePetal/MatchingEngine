@@ -20,9 +20,7 @@ public class ClientHandlerTest {
 	@Before
 	public void setUp() throws Exception{
 		
-		final Socket socket = mock(Socket.class);
-		Greeter greeter = new Greeter();
-		handler = new ClientHandler(socket, greeter);
+
 		
 	}
 	

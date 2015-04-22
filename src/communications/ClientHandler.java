@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Observable;
 
 import models.Message;
 import models.OpCodes;
@@ -14,7 +15,7 @@ import com.google.gson.Gson;
 
 
 
-public class ClientHandler implements Runnable {
+public class ClientHandler extends Observable implements Runnable {
 
 	private Socket socket;
 	private Gson gson;
@@ -189,6 +190,12 @@ public class ClientHandler implements Runnable {
 		return clientMessage;
 	}
 
+	public void update(){
+		
+		setChanged();
+		notifyObservers(this);
+	}
+	
 	public void run() {
 		
 		if(setupCommunicationTools()){
@@ -210,6 +217,7 @@ public class ClientHandler implements Runnable {
 					+ message.getJson());	
 					/*****************************/
 					
+					
 					switch (message.getType()) {
 						
 						case OpCodes.LOG_IN:
@@ -222,11 +230,20 @@ public class ClientHandler implements Runnable {
 							
 						case OpCodes.ORDER:
 								//TODO Call Order method
+							
+								//TODO  Notify Observers
 							break;
 					
 						default:
 							break;
 					}	
+					
+					/***********TEST*************/
+					update();
+					
+					
+					
+					/****************************/
 					
 				}//if
 
