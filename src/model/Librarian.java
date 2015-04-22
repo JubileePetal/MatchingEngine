@@ -57,7 +57,7 @@ public class Librarian implements Observer {
 	public void update(Observable arg0, Object arg1) {
 
 			Order order = (Order)arg1;
-			/**TEST*/
+			System.out.println("Order ID in Librarian: " + order.getId());
 			
 
 		

@@ -12,9 +12,9 @@ public class WorkPool {
 	
 	/** PrincessOfTheUniverse **/
 	
-	public WorkPool(Librarian librarian) {
+	public WorkPool() {
 		workers  = new ArrayList<Worker>();
-		this.librarian = librarian;
+		
 	}
 	
 	public void createWorkers(int nrOfWorkers){
@@ -29,6 +29,7 @@ public class WorkPool {
 
 
 	public void startWorkers(){
+
 		
 		for(Worker w : workers){
 			
@@ -37,4 +38,10 @@ public class WorkPool {
 		}
 		
 	}
+
+	public void setLibrarian(Librarian librarian) {
+		this.librarian = librarian;
+	}
+	
+	
 }
