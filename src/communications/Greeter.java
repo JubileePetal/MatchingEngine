@@ -30,9 +30,9 @@ public class Greeter implements Runnable {
 	private ServerSocket welcomeSocket;
 
 	
-	public Greeter(Librarian librarian) {
+	public Greeter() {
 		
-		this.librarian = librarian;
+		
 		
 		admins 		= new HashMap<String,ClientHandler>();
 		traders 	= new HashMap<String,ClientHandler>();	
@@ -79,6 +79,14 @@ public class Greeter implements Runnable {
 		
 	}
 	
+	public Librarian getLibrarian() {
+		return librarian;
+	}
+
+	public void setLibrarian(Librarian librarian) {
+		this.librarian = librarian;
+	}
+
 	private Socket waitForNewClients(){
 		
 		Socket socket = null;

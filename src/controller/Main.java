@@ -15,10 +15,8 @@ public class Main {
 			int nrOfWorkers  = Integer.parseInt(args[0]);
 			
 			Initializer initializer = new Initializer();
-			initializer.setUpArchive();
-			initializer.setUpLibrary();
+			initializer.establishDependencies();
 			initializer.setupWorkPool(nrOfWorkers);
-			initializer.setupGreeter();
 			initializer.startWorkers();
 			initializer.startGreeter();
 

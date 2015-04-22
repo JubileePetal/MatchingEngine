@@ -21,47 +21,28 @@ public class Initializer {
 	
 	public Initializer() {
 		
+		archiver 	= new Archiver();
+		librarian 	= new Librarian();
+		greeter 	= new Greeter();
+		wp 			= new WorkPool();
 	}
 	
 
-	public void setUpArchive(){
-		
-		archiver = new Archiver();
-		readFromArchives();
-		
-	}
 	
-	public void readFromArchives(){
+	public void getInstrumentsFromArchives(){
 		
 		instruments = archiver.retrieveInstruments();
 		
 	}
 	
-	public void setUpLibrary(){
-		
-		librarian = new Librarian();
-		
-		for (Instrument i : instruments){
-			
-			librarian.addOrderBook(i);
-			
-		}
-		
-	}
-	
-	public void setupGreeter(){
-		
-		greeter = new Greeter(librarian);
-		greeter.setInstruments(instruments);
-	}
+
 	
 	public void startGreeter(){
 		(new Thread(greeter)).start();
 	}
 	
 	public void setupWorkPool(int nrOfWorkers){
-		
-		wp = new WorkPool(librarian);
+
 		wp.createWorkers(nrOfWorkers);
 		
 	}
@@ -69,6 +50,23 @@ public class Initializer {
 	public void startWorkers(){
 		
 		wp.startWorkers();
+		
+	}
+	
+	public void establishDependencies(){
+		
+		getInstrumentsFromArchives();
+		greeter.setInstruments(instruments);
+		greeter.setLibrarian(librarian);
+		wp.setLibrarian(librarian);
+		
+		for (Instrument i : instruments){
+			
+			librarian.addOrderBook(i);
+			
+		}
+		
+		
 		
 	}
 
