@@ -224,15 +224,7 @@ public class ClientHandler extends Observable implements Runnable {
 				Message message = receiveMessage();
 				
 				if(connected){
-					
-					/*********PRINT STUFF********/
-//					System.out.println("Message type : "
-//					+ 	message.getType());
-//					System.out.println("Message message:  "
-//					+ message.getJson());	
-					/*****************************/
-					
-					
+				
 					switch (message.getType()) {
 						
 						case OpCodes.LOG_IN:
@@ -252,13 +244,7 @@ public class ClientHandler extends Observable implements Runnable {
 						default:
 							break;
 					}	
-					
-					/***********TEST*************/
-					
-					
-					
-					
-					/****************************/
+
 					
 				}//if
 
@@ -266,28 +252,7 @@ public class ClientHandler extends Observable implements Runnable {
 				
 				
 				
-	/*******************TEST CODE******************/
-				
-				
-				/**
-				String clientMessage = null;
-				
-				try {
-					
-					 clientMessage = inFromClient.readLine();
-					 System.out.println("New message.");
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-		
-				Order order = gson.fromJson(clientMessage,Order.class);
-				System.out.println("Client message: " + clientMessage);
-				
-				
-	/*********************************************/
-				
+
 				
 			}//while
 			

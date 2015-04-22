@@ -6,6 +6,7 @@ import java.util.Observer;
 import java.util.PriorityQueue;
 
 import models.Instrument;
+import models.Order;
 
 public class Librarian implements Observer {
 	
@@ -55,7 +56,8 @@ public class Librarian implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 
-			System.out.println("SIR, YES SIR!");
+			Order order = (Order)arg1;
+			
 
 		
 	}
