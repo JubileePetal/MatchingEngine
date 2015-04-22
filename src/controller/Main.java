@@ -12,7 +12,9 @@ public class Main {
 		
 		Greeter greeter = new Greeter();
 		(new Thread(greeter)).start();
-		
+		Initializer initializer = new Initializer();
+		initializer.setUpArchive();
+		initializer.setUpOrderBooks();
 		
 	
 		
