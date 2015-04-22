@@ -58,8 +58,12 @@ public class Librarian implements Observer {
 
 			Order order = (Order)arg1;
 			System.out.println("Order ID in Librarian: " + order.getId());
+			System.out.println("Order Abbrev: " + order.getInstrument().getAbbreviation());
+			String key = order.getInstrument().getAbbreviation();
 			
-
+			OrderBook ob = library.get(key);
+			
+			
 		
 	}
 	
