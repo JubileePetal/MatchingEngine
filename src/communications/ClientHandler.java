@@ -103,7 +103,7 @@ public class ClientHandler extends Observable implements Runnable {
 		return gson.fromJson(clientMessage,Message.class);
 	}
 
-	public void addClient(Message message){
+	public void addUserToGreeter(Message message){
 		
 		User user =  gson.fromJson(message.getJson(),User.class);
 		this.username = user.getUsername();
@@ -196,6 +196,18 @@ public class ClientHandler extends Observable implements Runnable {
 		notifyObservers(this);
 	}
 	
+	public void getUniqeOrderID(){
+		
+		
+	}
+	
+	public void newOrder(Message message){
+		
+		Order order =  gson.fromJson(message.getJson(),Order.class);
+		
+		
+	}
+	
 	public void run() {
 		
 		if(setupCommunicationTools()){
@@ -211,17 +223,17 @@ public class ClientHandler extends Observable implements Runnable {
 				if(connected){
 					
 					/*********PRINT STUFF********/
-					System.out.println("Message type : "
-					+ 	message.getType());
-					System.out.println("Message message:  "
-					+ message.getJson());	
+//					System.out.println("Message type : "
+//					+ 	message.getType());
+//					System.out.println("Message message:  "
+//					+ message.getJson());	
 					/*****************************/
 					
 					
 					switch (message.getType()) {
 						
 						case OpCodes.LOG_IN:
-							addClient(message);
+							addUserToGreeter(message);
 							break;
 							
 						case OpCodes.LOG_OUT:
@@ -230,6 +242,7 @@ public class ClientHandler extends Observable implements Runnable {
 							
 						case OpCodes.ORDER:
 								//TODO Call Order method
+							System.out.println("Got an order......");
 							
 								//TODO  Notify Observers
 							break;
@@ -239,7 +252,7 @@ public class ClientHandler extends Observable implements Runnable {
 					}	
 					
 					/***********TEST*************/
-					update();
+					
 					
 					
 					
@@ -247,16 +260,7 @@ public class ClientHandler extends Observable implements Runnable {
 					
 				}//if
 
-					
-				
-				
-			//TODO Get a user message with user types
-	
 
-				
-			//TODO Add the user to the greeters list of users
-				
-			//TODO Wait for new messages from the user
 				
 				
 				
