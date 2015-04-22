@@ -1,14 +1,21 @@
 package controller;
 
-public class Worker implements Runnable {
+import model.Librarian;
 
-	public Worker() {
-		// TODO Auto-generated constructor stub
+public class Worker implements Runnable {
+	
+	private Librarian librarian;
+	
+	public Worker(Librarian librarian) {
+		this.librarian = librarian;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+	
+		
+		String key = librarian.getFirstInQueue();
+		System.out.println("Got this from the queue:" + key);
 		
 	}
 

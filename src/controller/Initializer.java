@@ -17,9 +17,10 @@ public class Initializer {
 	private ArrayList<Instrument> instruments;
 	
 	private Librarian librarian;
+	private WorkPool wp;
 	
 	public Initializer() {
-		// TODO Auto-generated constructor stub
+		
 	}
 	
 
@@ -58,7 +59,18 @@ public class Initializer {
 		(new Thread(greeter)).start();
 	}
 	
+	public void setupWorkPool(int nrOfWorkers){
+		
+		wp = new WorkPool(librarian);
+		wp.createWorkers(nrOfWorkers);
+		
+	}
 	
+	public void startWorkers(){
+		
+		wp.startWorkers();
+		
+	}
 
 
 }
