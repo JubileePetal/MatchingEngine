@@ -10,12 +10,13 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		Greeter greeter = new Greeter();
-		(new Thread(greeter)).start();
+		//Greeter greeter = new Greeter();
+		//(new Thread(greeter)).start();
 		Initializer initializer = new Initializer();
 		initializer.setUpArchive();
 		initializer.setUpOrderBooks();
-		
+		initializer.setupGreeter();
+		initializer.startGreeter();
 	
 		
 

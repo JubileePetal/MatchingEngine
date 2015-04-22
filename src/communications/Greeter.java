@@ -7,7 +7,10 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import models.Instrument;
 
 import com.google.gson.Gson;
 
@@ -18,6 +21,9 @@ public class Greeter implements Runnable {
 	private HashMap<String,ClientHandler> traders;
 	private HashMap<String,ClientHandler> isvrs;
 	private HashMap<String,ClientHandler> regulators;
+	
+	private ArrayList<Instrument> instruments;
+	
 	
 	private ServerSocket welcomeSocket;
 
@@ -104,8 +110,18 @@ public class Greeter implements Runnable {
 	}
 
 	public void addRegulator(String username, ClientHandler client){
+
 		
 		regulators.put(username, client);
 	}
+
+	public ArrayList<Instrument> getInstruments() {
+		return instruments;
+	}
+
+	public void setInstruments(ArrayList<Instrument> instruments) {
+		this.instruments = instruments;
+	}
+	
 	
 }

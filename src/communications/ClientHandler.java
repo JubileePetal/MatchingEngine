@@ -13,7 +13,7 @@ import models.User;
 import com.google.gson.Gson;
 
 
-/**Test comment*/
+
 public class ClientHandler implements Runnable {
 
 	private Socket socket;
@@ -104,7 +104,7 @@ public class ClientHandler implements Runnable {
 
 	public void addClient(Message message){
 		
-		User user =  gson.fromJson(message.getMessage(),User.class);
+		User user =  gson.fromJson(message.getJson(),User.class);
 		this.username = user.getUsername();
 		
 		/** add user to the right list in greeter*/
@@ -143,13 +143,21 @@ public class ClientHandler implements Runnable {
 		
 		Message message = new Message();
 		message.setType(loginStatus);
-		
+		message.setJson(getInstruments());
 		String stringMessage = gson.toJson(message);
 		
 		writeToClient(stringMessage);
 		
 
 		
+	}
+	
+	public String getInstruments(){
+		
+		String instrumentMessage = gson.toJson(greeter.getInstruments());
+		
+		
+		return instrumentMessage;
 	}
 	
 	private void writeToClient(String stringMessage) {
@@ -199,7 +207,7 @@ public class ClientHandler implements Runnable {
 					System.out.println("Message type : "
 					+ 	message.getType());
 					System.out.println("Message message:  "
-					+ message.getMessage());	
+					+ message.getJson());	
 					/*****************************/
 					
 					switch (message.getType()) {

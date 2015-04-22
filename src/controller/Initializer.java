@@ -4,7 +4,7 @@ package controller;
 
 import java.util.ArrayList;
 
-import model.OrderBooks;
+import model.Librarian;
 import models.Instrument;
 import communications.Greeter;
 
@@ -13,7 +13,7 @@ public class Initializer {
 	private Greeter greeter;
 	private TradeProcessor tradeProcessor;
 	private Archiver archiver;
-	private OrderBooks orderbooks;
+	private Librarian orderbooks;
 	private ArrayList<Instrument> instruments;
 	
 	public Initializer() {
@@ -21,14 +21,12 @@ public class Initializer {
 	}
 	
 
-	
 	public void setUpArchive(){
 		
 		archiver = new Archiver();
 		readFromArchives();
 		
 	}
-	
 	
 	public void readFromArchives(){
 		
@@ -38,11 +36,26 @@ public class Initializer {
 	
 	public void setUpOrderBooks(){
 		
+		Librarian librarian = new Librarian();
+		
 		for (Instrument i : instruments){
 			
+			librarian.addOrderBook(i);
 			
 		}
 		
 	}
+	
+	public void setupGreeter(){
+		
+		greeter = new Greeter();
+		greeter.setInstruments(instruments);
+	}
+	
+	public void startGreeter(){
+		(new Thread(greeter)).start();
+	}
+
+
 
 }
