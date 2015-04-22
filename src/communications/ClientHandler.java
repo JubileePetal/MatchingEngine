@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Observable;
 
 import models.Message;
@@ -25,9 +26,11 @@ public class ClientHandler extends Observable implements Runnable {
 	private Greeter greeter;
 	private String username;
 	
+	private ArrayList<Order> myOrders;
 	
 	public ClientHandler(Socket clientSocket, Greeter greetedBy){
 		
+		myOrders = new ArrayList<Order>();
 		greeter = greetedBy;
 		socket = clientSocket;
 		
@@ -190,10 +193,10 @@ public class ClientHandler extends Observable implements Runnable {
 		return clientMessage;
 	}
 
-	public void update(){
+	public void update(Order order){
 		
 		setChanged();
-		notifyObservers(this);
+		notifyObservers(order);
 	}
 	
 	public void getUniqeOrderID(){
@@ -201,11 +204,11 @@ public class ClientHandler extends Observable implements Runnable {
 		
 	}
 	
-	public void newOrder(Message message){
+	public Order newOrder(Message message){
 		
 		Order order =  gson.fromJson(message.getJson(),Order.class);
-		
-		
+		myOrders.add(order);
+		return order;
 	}
 	
 	public void run() {
@@ -241,10 +244,9 @@ public class ClientHandler extends Observable implements Runnable {
 							break;
 							
 						case OpCodes.ORDER:
-								//TODO Call Order method
 							System.out.println("Got an order......");
-							
-								//TODO  Notify Observers
+							Order order = newOrder(message);
+							update(order);
 							break;
 					
 						default:
