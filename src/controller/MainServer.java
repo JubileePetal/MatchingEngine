@@ -2,9 +2,9 @@ package controller;
 import communications.Greeter;
 
 
-public class Main {
+public class MainServer {
 
-	public Main() {
+	public MainServer() {
 		// TODO Auto-generated constructor stub
 	}
 
