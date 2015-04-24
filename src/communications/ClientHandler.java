@@ -20,11 +20,12 @@ public class ClientHandler extends Observable implements Runnable {
 
 	private Socket socket;
 	private Gson gson;
-	private BufferedReader inFromClient;
-	private DataOutputStream outToClient;
 	private boolean connected;
 	private Greeter greeter;
 	private String username;
+	
+	private Sender sender;
+	private Receiver receiver;
 	
 	private ArrayList<Order> myOrders;
 	
@@ -33,182 +34,86 @@ public class ClientHandler extends Observable implements Runnable {
 		myOrders = new ArrayList<Order>();
 		greeter = greetedBy;
 		socket = clientSocket;
+		sender = new Sender(this);
+		receiver = new Receiver(this);
+		gson = new Gson();
 		
 	}
-		
+	
 	public boolean setupCommunicationTools(){
 			
-		gson = new Gson();
-			
-		inFromClient = null;
-		outToClient  = null;
+		sender.setSocket(socket);
+		receiver.setSocket(socket);
 		
-		boolean readerOK = setupClientReader();
-		boolean writerOK = setupClientWriter();
-			
-		return (readerOK && writerOK);
+		return (sender.initiateStream() && receiver.initiateStream());
 	}
-
-	public boolean setupClientWriter() {
-        
-		try {
-			outToClient =
-					new DataOutputStream(socket.getOutputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Could not set up DataOutputStream "
-					+ "outToClient in ClientHandler");
-			return false;
-		}
-		
-		return true;
-		
-	}
-
-	public boolean setupClientReader() {
-        try {
-			inFromClient =
-					new BufferedReader
-						(new InputStreamReader(socket.getInputStream()));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Could not set up BufferedReader inFromClient"
-					+ " in ClientHandler");
-			return false;
-		}
-		
-        return true;
-	}
-
-	public Message receiveMessage(){
-		
-		String clientMessage;
-		Message message = null;
-		clientMessage = readFromClient();
-		
-		if(clientMessage == null){
-			
-			connected = false;
-			System.out.println("Client disconnected.");
-			
-		}else{
-			
-			message = unpackMessage(clientMessage);
-			
-		}
-		return message;
-		
-	}
-
-	public Message unpackMessage(String clientMessage){
-		
-		return gson.fromJson(clientMessage,Message.class);
-	}
-
-	public void addUserToGreeter(Message message){
+	
+	public int addUserToGreeter(Message message){
 		
 		User user =  gson.fromJson(message.getJson(),User.class);
 		this.username = user.getUsername();
 		
-		/** add user to the right list in greeter*/
+		int userStatus;
+	
 		switch (user.getUserType()) {
 			case OpCodes.TRADER:
-				greeter.addTrader(user.getUsername(), this);
+				greeter.addTrader(username, this);
 				System.out.println("Trader accepted.");
-				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				userStatus = OpCodes.LOG_IN_ACCEPTED;
 				break;
 				
 			case OpCodes.REGULATOR:
-				greeter.addRegulator(user.getUsername(), this);
-				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				greeter.addRegulator(username, this);
+				userStatus = OpCodes.LOG_IN_ACCEPTED;
 				break;
 				
 			case OpCodes.ADMIN:
-				greeter.addAdmin(user.getUsername(), this);
-				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				greeter.addAdmin(username, this);
+				userStatus = OpCodes.LOG_IN_ACCEPTED;
 				break;
 			
 			case OpCodes.ISVR:
-				greeter.addIsvr(user.getUsername(), this);
-				loginResponse(OpCodes.LOG_IN_ACCEPTED);
+				greeter.addIsvr(username, this);
+				userStatus = OpCodes.LOG_IN_ACCEPTED;
 				break;
 			
 			default:
-				loginResponse(OpCodes.LOG_IN_REJECTED);
+				userStatus = OpCodes.LOG_IN_REJECTED;
 				break;
 			}
 		
-			
-			
-	}
+		return userStatus;
+	}		
 	
-	private void loginResponse(int loginStatus){
-		
-		Message message = new Message();
-		message.setType(loginStatus);
-		message.setJson(getInstruments());
-		String stringMessage = gson.toJson(message);
-		
-		writeToClient(stringMessage);
-		
-
-		
-	}
-	
-	public String getInstruments(){
+	public String getValidInstruments(){
 		
 		String instrumentMessage = gson.toJson(greeter.getInstruments());
-		
-		
+
 		return instrumentMessage;
 	}
 	
-	private void writeToClient(String stringMessage) {
-			
-		try {
-			outToClient.writeBytes(stringMessage + '\n');
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Could not writeToClient in ClientHandler");
-
-		}
-		
-	}
-	
-	private String readFromClient() {
-		
-		String clientMessage = null;
-		
-		try {
-			
-			 clientMessage = inFromClient.readLine();
-			 System.out.println("New message.");
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.out.println("Could not read message from client "
-					+ "in ClientHandler.");
-		}
-		return clientMessage;
-	}
-
 	public void update(Order order){
 		
 		setChanged();
 		notifyObservers(order);
 	}
 	
-	public void getUniqeOrderID(){
+	public long createUniqeOrderID(){
 		
+		long ID = 743874;
 		
+		return ID;
 	}
 	
-	public Order newOrder(Message message){
+	public Order unpackOrder(Message message){
 		
 		Order order =  gson.fromJson(message.getJson(),Order.class);
 		myOrders.add(order);
 		return order;
+	}
+	
+	public void setConnected(boolean connected) {
+		this.connected = connected;
 	}
 	
 	public void run() {
@@ -221,14 +126,16 @@ public class ClientHandler extends Observable implements Runnable {
 			while(connected){
 				
 				
-				Message message = receiveMessage();
+				Message message = receiver.readFromClient();
 				
 				if(connected){
 				
 					switch (message.getType()) {
 						
 						case OpCodes.LOG_IN:
-							addUserToGreeter(message);
+							
+							int userStatus = addUserToGreeter(message);	
+							sender.sendToClient(userStatus, getValidInstruments());						
 							break;
 							
 						case OpCodes.LOG_OUT:
@@ -236,8 +143,9 @@ public class ClientHandler extends Observable implements Runnable {
 							break;
 							
 						case OpCodes.ORDER:
-							System.out.println("Got an order......");
-							Order order = newOrder(message);
+							System.out.println("Got an order.");
+							Order order = unpackOrder(message);
+							sender.confirmOrder(createUniqeOrderID());
 							update(order);
 							break;
 					
@@ -247,12 +155,6 @@ public class ClientHandler extends Observable implements Runnable {
 
 					
 				}//if
-
-
-				
-				
-				
-
 				
 			}//while
 			
@@ -260,3 +162,4 @@ public class ClientHandler extends Observable implements Runnable {
 		
 	}
 }
+
