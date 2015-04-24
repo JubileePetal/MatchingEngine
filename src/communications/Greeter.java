@@ -26,6 +26,8 @@ public class Greeter implements Runnable {
 	private Librarian librarian;
 	private ArrayList<Instrument> instruments;
 	
+	/**NOT PRETTY*/
+	long orderIDCounter;
 	
 	private ServerSocket welcomeSocket;
 
@@ -34,10 +36,11 @@ public class Greeter implements Runnable {
 		
 		
 		
-		admins 		= new HashMap<String,ClientHandler>();
-		traders 	= new HashMap<String,ClientHandler>();	
-		isvrs 		= new HashMap<String,ClientHandler>();	
-		regulators	= new HashMap<String,ClientHandler>();	
+		admins 			= new HashMap<String,ClientHandler>();
+		traders 		= new HashMap<String,ClientHandler>();	
+		isvrs 			= new HashMap<String,ClientHandler>();	
+		regulators		= new HashMap<String,ClientHandler>();	
+		orderIDCounter 	= 0;
 	}	
 
 	public void createWelcomeSocket(){
@@ -135,5 +138,12 @@ public class Greeter implements Runnable {
 		this.instruments = instruments;
 	}
 	
+	public synchronized long getUniqueOrderID(){
+		
+		long newOrderID;	
+		orderIDCounter++;
+		newOrderID = orderIDCounter;
+		return newOrderID;
+	}
 	
 }

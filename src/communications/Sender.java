@@ -7,6 +7,7 @@ import java.net.Socket;
 import com.google.gson.Gson;
 
 import models.Message;
+import models.OpCodes;
 
 public class Sender {
 	
@@ -47,7 +48,8 @@ public class Sender {
 
 	public void confirmOrder(long uniqueOrderID) {
 		
-		
+		String newJson = gson.toJson(uniqueOrderID);
+		sendToClient(OpCodes.ORDER_CONFIRMED,newJson);
 		
 	}
 	
