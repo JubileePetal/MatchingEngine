@@ -26,17 +26,16 @@ public class ClientHandler extends Observable implements Runnable {
 	
 	private Sender sender;
 	private Receiver receiver;
-	
 	private ArrayList<Order> myOrders;
 	
 	public ClientHandler(Socket clientSocket, Greeter greetedBy){
 		
-		myOrders = new ArrayList<Order>();
-		greeter = greetedBy;
-		socket = clientSocket;
-		sender = new Sender(this);
-		receiver = new Receiver(this);
-		gson = new Gson();
+		myOrders	 = new ArrayList<Order>();
+		greeter 	 = greetedBy;
+		socket 		 = clientSocket;
+		sender 		 = new Sender(this);
+		receiver  	 = new Receiver(this);
+		gson 		 = new Gson();
 		
 	}
 	
@@ -86,10 +85,7 @@ public class ClientHandler extends Observable implements Runnable {
 	}		
 	
 	public String getValidInstruments(){
-		
-		String instrumentMessage = gson.toJson(greeter.getInstruments());
-
-		return instrumentMessage;
+		return gson.toJson(greeter.getInstruments());
 	}
 	
 	public void update(Order order){
@@ -98,17 +94,11 @@ public class ClientHandler extends Observable implements Runnable {
 		notifyObservers(order);
 	}
 	
-	public long createUniqeOrderID(){
-		
-		long ID = 743874;
-		
-		return ID;
-	}
-	
 	public Order unpackOrder(Message message){
 		
 		Order order =  gson.fromJson(message.getJson(),Order.class);
 		myOrders.add(order);
+		order.setId(greeter.getUniqueOrderID());
 		return order;
 	}
 	
@@ -145,8 +135,8 @@ public class ClientHandler extends Observable implements Runnable {
 						case OpCodes.ORDER:
 							System.out.println("Got an order.");
 							Order order = unpackOrder(message);
-							sender.confirmOrder(createUniqeOrderID());
 							update(order);
+							sender.confirmOrder(order.getId());
 							break;
 					
 						default:
