@@ -62,7 +62,7 @@ public class Librarian implements Observer {
 			String key = order.getInstrument().getAbbreviation();
 			
 			OrderBook ob = library.get(key);
-			ob.enterOrder(order);
+			ob.handOffOrder(order);
 			
 			
 		

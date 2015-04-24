@@ -1,49 +1,65 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import models.OpCodes;
 import models.Order;
 
+
 public class OrderBook  {
 
+	private TreeSet<Order> pendingOrders;
 	private HashMap<Double,Order> buyOrders;
 	private HashMap<Double,Order> sellOrders;
+
+	private OrderGuide orderGuide;
 	
 	public OrderBook() {
+		
+        Comparator<Order> comparator = new Comparator<Order>() {
+            @Override
+            public int compare(Order a, Order b) {
+                return a.getTimeEnteredOrderBook() < b.getTimeEnteredOrderBook() ? -1 : 1;
+            }
+        };
+
+		pendingOrders = new TreeSet<Order>(comparator);
+		orderGuide = new OrderGuide(this);
+
 		buyOrders = new HashMap<Double,Order>();
 		sellOrders = new HashMap<Double,Order>();
 	}
 	
-	public void enterOrder(Order order) {
-		
-		int typeOfOrder = order.getTypeOfOrder();
-		
-		if(typeOfOrder == OpCodes.LIMIT_ORDER) {
-			
-			int orderType = order.isBuyOrSell();
-			
-			if(orderType == OpCodes.BUY_ORDER) {
-				addToHash(buyOrders, order);
-			} else if(orderType == OpCodes.SELL_ORDER) {
-				addToHash(sellOrders, order);
-			}
-			
-			System.out.println("This is a Limit Order");
-			
-		} else if(typeOfOrder == OpCodes.MARKET_ORDER) {
-			
-			System.out.println("This is a Market Order");
-			//TODO handle market order			
-		}
+	public void handOffOrder(Order order) {
+		orderGuide.handOffOrder(order);
 	}
 	
-	private void addToHash(HashMap<Double, Order> map , Order order) {
+	public void addToPending(Order order) {
+		
+		synchronized(pendingOrders) {
+			pendingOrders.add(order);
+		}
+	}
+
+	public void addToBuyHash(Order order) {
 
 		Double price = order.getPrice();
 		
-		synchronized(map) {
-			map.put(price, order);
+		synchronized(buyOrders) {
+			buyOrders.put(price, order);
+		}
+	}
+	
+	public void addToSellHash(Order order) {
+		
+		Double price = order.getPrice();
+		
+		synchronized(sellOrders) {
+			sellOrders.put(price, order);
 		}
 	}
 	
