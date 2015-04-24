@@ -19,9 +19,37 @@ public class OrderBook  {
 	private HashMap<Double,Order> buyOrders;
 	private HashMap<Double,Order> sellOrders;
 
+	private TreeSet<Order> buyOrdersT;
+	
 	private OrderGuide orderGuide;
 	
 	public OrderBook() {
+		
+        Comparator<Order> buyOrderComp = new Comparator<Order>() {
+            @Override
+            public int compare(Order a, Order b) {
+            	
+            	double priceA = a.getPrice();
+            	long timeA = a.getTimeEnteredOrderBook();
+            	
+            	double priceB = b.getPrice();
+            	long timeB = b.getTimeEnteredOrderBook();
+            	
+            	if(priceA > priceB) {
+            		return -1;
+            	} else if(priceA == priceB) {
+            		if(timeA < timeB) {
+            			return -1;
+            		} else {
+            			return 1;
+            		}
+            	} else {
+            		return 1;
+            	}
+            	
+            }
+        };
+		buyOrdersT = new TreeSet<Order>(buyOrderComp);
 		
         Comparator<Order> comparator = new Comparator<Order>() {
             @Override
@@ -39,6 +67,13 @@ public class OrderBook  {
 		orderGuide = new OrderGuide(this);
 	}
 	
+	public Order getBuyOrder(Double key) {
+		
+		
+		
+		return null;
+	}
+	
 	public void handleMarketOrders() {
 		
 		boolean workExists = marketOrders.isEmpty() ? false : true;
@@ -51,19 +86,42 @@ public class OrderBook  {
 	
 	public Double getMaxBuy() {
 		
-		return 0.0;
+		Entry<Double, Order> max = null;
+		
+		synchronized(buyOrders) {
+			
+			for (Entry<Double, Order> entry : buyOrders.entrySet()) {
+			    if (max == null || max.getKey() < entry.getKey()) {
+			        max = entry;
+			    }
+			}
+		}
+
+		return max.getKey();
 	}
 	
-	public void match() {
-	/*	
+	public Double getMinSell() {
+		
 		Entry<Double, Order> min = null;
-		for (Entry<String, Double> entry : map.entrySet()) {
-		    if (min == null || min.getValue() > entry.getValue()) {
-		        min = entry;
-		    }
+		
+		synchronized(sellOrders) {
+			
+			for (Entry<Double, Order> entry : sellOrders.entrySet()) {
+			    if (min == null || min.getKey() > entry.getKey()) {
+			        min = entry;
+			    }
+			}
 		}
-		double maxBuy = Collections.max(buyOrders.values());
-		*/
+
+		return min.getKey();
+	}
+	
+	public boolean isMatchPossible() {
+		
+		double maxBuy = getMaxBuy().doubleValue();
+		double minSell = getMinSell().doubleValue();
+		
+		return maxBuy > minSell ? true : false;
 	}
 	
 	public void handOffOrder(Order order) {
@@ -91,6 +149,23 @@ public class OrderBook  {
 		synchronized(buyOrders) {
 			buyOrders.put(price, order);
 		}
+	}
+	
+	public void addToBuy(Order order) {
+
+		synchronized(buyOrdersT) {
+			buyOrdersT.add(order);
+		}
+	}
+	
+	public Order getMaxBuyT() {
+
+		Order order = null;
+		
+		synchronized(buyOrdersT) {
+			order = buyOrdersT.pollFirst();
+		}
+		return order;
 	}
 	
 	public void addToSellHash(Order order) {
