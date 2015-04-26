@@ -13,7 +13,6 @@ public class Initializer {
 	private Greeter greeter;
 	private TradeProcessor tradeProcessor;
 	private Archiver archiver;
-	private Librarian orderbooks;
 	private ArrayList<Instrument> instruments;
 	
 	private Librarian librarian;
@@ -21,21 +20,18 @@ public class Initializer {
 	
 	public Initializer() {
 		
-		archiver 	= new Archiver();
-		librarian 	= new Librarian();
-		greeter 	= new Greeter();
-		wp 			= new WorkPool();
+		archiver 		= new Archiver();
+		librarian 		= new Librarian();
+		greeter 		= new Greeter();
+		tradeProcessor 	= new TradeProcessor();
+		wp 				= new WorkPool();
 	}
-	
-
-	
+		
 	public void getInstrumentsFromArchives(){
 		
 		instruments = archiver.retrieveInstruments();
 		
 	}
-	
-
 	
 	public void startGreeter(){
 		(new Thread(greeter)).start();
@@ -59,7 +55,9 @@ public class Initializer {
 		greeter.setInstruments(instruments);
 		greeter.setLibrarian(librarian);
 		wp.setLibrarian(librarian);
-		//wp.setGreeter(greeter);
+		tradeProcessor.setGreeter(greeter);
+		wp.setTradeProcessor(tradeProcessor);
+		
 		
 		for (Instrument i : instruments){
 			

@@ -1,10 +1,14 @@
 package controller;
 
+import communications.Greeter;
+
 import models.OpCodes;
 import models.Order;
 
 public class TradeProcessor {
 
+	private Greeter greeter;
+	
 	public TradeProcessor() {
 		// TODO Auto-generated constructor stub
 	}
@@ -44,6 +48,18 @@ public class TradeProcessor {
 		trade.setBuyer(buyOrder.getMyOwner());
 		trade.setBuyOrderID(buyOrder.getId());
 	}
+
+	
+	
+	public Greeter getGreeter() {
+		return greeter;
+	}
+
+
+	public void setGreeter(Greeter greeter) {
+		this.greeter = greeter;
+	}
+	
 	
 	
 }
