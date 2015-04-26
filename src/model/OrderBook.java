@@ -27,10 +27,17 @@ public class OrderBook  {
 	
 	public boolean matchIsPossible() {
 		
-		double maxBuy = buyOrders.first().getPrice();
-		double minSell = sellOrders.first().getPrice();
-		
-		return maxBuy >= minSell;
+		if(buyOrders.isEmpty() || sellOrders.isEmpty()) {
+			
+			return false;
+			
+		} else {
+			
+			double maxBuy = buyOrders.first().getPrice();
+			double minSell = sellOrders.first().getPrice();
+			
+			return maxBuy >= minSell;
+		}
 	}
 	
 	public Order getFirstBuy() {		

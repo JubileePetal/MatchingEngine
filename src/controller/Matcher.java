@@ -38,6 +38,9 @@ public class Matcher implements Runnable {
 			Order buyOrder = orderBook.getFirstBuy();
 			Order sellOrder = orderBook.getFirstSell();
 			
+			if(buyOrder.getQuantity() > sellOrder.getQuantity()) {
+				matchFromBuy(buyOrder, sellOrder);
+			}
 			// if buyOrder Quantity is larger than sellOrder quantity
 				// sell is finished
 				// split buy into two orders, one with sell amount and one with remaining amount
@@ -49,6 +52,26 @@ public class Matcher implements Runnable {
 				// put one sell with remaining amount back
 			// else if they have the same quantity just fricken match
 		}
+	}
+	
+	private void matchFromBuy(Order buyOrder, Order sellOrder) {
+		
+		int sellOrderQuantity = sellOrder.getQuantity();
+		int originalBuyOrderQuantity = buyOrder.getQuantity();
+		
+		// create a copy of the buy order, but set it's buy quantity
+		// to the amount being sold
+		Order buyOrderCopy = (Order) buyOrder.clone();		
+		buyOrderCopy.setOrderQuantity(sellOrderQuantity);
+		
+		// reduce the quantity of the original buy order with
+		// an amount equal to that being bought, and put it back
+		// in the orderBook
+		buyOrder.setOrderQuantity(originalBuyOrderQuantity - sellOrderQuantity);
+		orderBook.addToBuyOrders(buyOrder);
+		
+		tradeProcessor.createTrade(buyOrderCopy, sellOrder);
+	
 	}
 
 }
