@@ -17,25 +17,16 @@ public class OrderBook  {
 	private TreeSet<Order> buyOrders;
 	private TreeSet<Order> sellOrders;
 	
-	private OrderGuide orderGuide;
-	
 	public OrderBook() {
 		
 		buyOrders = TreeSetCreator.createBuyOrderSet();
 		sellOrders = TreeSetCreator.createSellOrderSet();
 		marketOrders = TreeSetCreator.createMarketOrderSet();
-		
-		//TODO MOVE THIS TO LIBRARIAN
-		orderGuide = new OrderGuide(this);
+
 	}
 	
-	public Order getBuyOrder(Double key) {
-		
-		
-		
-		return null;
-	}
-	
+
+/*	
 	public void handleMarketOrders() {
 		
 		boolean workExists = marketOrders.isEmpty() ? false : true;
@@ -45,39 +36,7 @@ public class OrderBook  {
 			workExists = false;
 		}
 	}
-	
-	//public Double getMaxBuy() {
-		
-		//Entry<Double, Order> max = null;
-		
-		//synchronized(buyOrders) {
-/*			
-			for (Entry<Double, Order> entry : buyOrders.entrySet()) {
-			    if (max == null || max.getKey() < entry.getKey()) {
-			        max = entry;
-			    }
-			}
-		}
-*/
-		//return max.getKey();
-	//}
-	
-	public Double getMinSell() {
-		
-		Entry<Double, Order> min = null;
-		
-		synchronized(sellOrders) {
-			/*
-			for (Entry<Double, Order> entry : sellOrders.entrySet()) {
-			    if (min == null || min.getKey() > entry.getKey()) {
-			        min = entry;
-			    }
-			}
-			*/
-		}
-
-		return min.getKey();
-	}
+*/	
 	/*
 	public boolean isMatchPossible() {
 		
@@ -87,9 +46,6 @@ public class OrderBook  {
 		//return maxBuy > minSell ? true : false;
 	}
 	*/
-	public void handOffOrder(Order order) {
-		orderGuide.handOffOrder(order);
-	}
 	
 	public void addToMarketOrders(Order order) {
 		
@@ -99,39 +55,17 @@ public class OrderBook  {
 	}
 	
 
-	public void addToBuyHash(Order order) {
-
-		Double price = order.getPrice();
+	public void addToBuyOrders(Order order) {
 		
 		synchronized(buyOrders) {
-			//buyOrders.put(price, order);
+			buyOrders.add(order);
 		}
 	}
 	
-	public void addToBuy(Order order) {
-
-		//synchronized(buyOrdersT) {
-			//buyOrdersT.add(order);
-		//}
-	}
-	
-	public Order getMaxBuyT() {
-
-		Order order = null;
-		/*
-		synchronized(buyOrdersT) {
-			order = buyOrdersT.pollFirst();
-		}
-		*/
-		return order;
-	}
-	
-	public void addToSellHash(Order order) {
-		
-		Double price = order.getPrice();
+	public void addToSellOrders(Order order) {
 		
 		synchronized(sellOrders) {
-			//sellOrders.put(price, order);
+			sellOrders.add(order);
 		}
 	}
 	
