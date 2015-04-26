@@ -2,12 +2,16 @@ package controller;
 
 import java.util.ArrayList;
 
+import communications.Greeter;
+
 import model.Librarian;
 
 public class WorkPool {
 	
+	private TradeProcessor tradeProcessor;
 	private Librarian librarian;
 	private ArrayList<Matcher> workers;
+	
 
 	
 	/** PrincessOfTheUniverse **/
@@ -21,19 +25,19 @@ public class WorkPool {
 		
 		for(int i = 0; i < nrOfWorkers; i++){
 			
-			Matcher worker = new Matcher(librarian);
-			workers.add(worker);
+			Matcher matcher = new Matcher(librarian);
+			matcher.setTradeProcessor(tradeProcessor);
+			workers.add(matcher);
 		}
 		
 	}
 
-
 	public void startWorkers(){
 
 		
-		for(Matcher w : workers){
+		for(Matcher m : workers){
 			
-			(new Thread(w)).start();
+			(new Thread(m)).start();
 			
 		}
 		
@@ -42,6 +46,17 @@ public class WorkPool {
 	public void setLibrarian(Librarian librarian) {
 		this.librarian = librarian;
 	}
+	
+
+	public void setTradeProcessor(TradeProcessor tradeProcessor) {
+		this.tradeProcessor = tradeProcessor;
+	}
+
+	
+	
+
+	
+	
 	
 	
 }
