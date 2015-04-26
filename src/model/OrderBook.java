@@ -13,9 +13,7 @@ import models.Order;
 
 public class OrderBook  {
 
-	private TreeSet<Order> pendingOrders;
 	private TreeSet<Order> marketOrders;
-
 	private TreeSet<Order> buyOrders;
 	private TreeSet<Order> sellOrders;
 	
@@ -23,45 +21,11 @@ public class OrderBook  {
 	
 	public OrderBook() {
 		
-        Comparator<Order> buyOrderComp = new Comparator<Order>() {
-            @Override
-            public int compare(Order a, Order b) {
-            	
-            	double priceA = a.getPrice();
-            	long timeA = a.getTimeEnteredOrderBook();
-            	
-            	double priceB = b.getPrice();
-            	long timeB = b.getTimeEnteredOrderBook();
-            	
-            	if(priceA > priceB) {
-            		return -1;
-            	} else if(priceA == priceB) {
-            		if(timeA < timeB) {
-            			return -1;
-            		} else {
-            			return 1;
-            		}
-            	} else {
-            		return 1;
-            	}
-            	
-            }
-        };
-		//buyOrdersT = new TreeSet<Order>(buyOrderComp);
+		buyOrders = TreeSetCreator.createBuyOrderSet();
+		sellOrders = TreeSetCreator.createSellOrderSet();
+		marketOrders = TreeSetCreator.createMarketOrderSet();
 		
-        Comparator<Order> comparator = new Comparator<Order>() {
-            @Override
-            public int compare(Order a, Order b) {
-                return a.getTimeEnteredOrderBook() < b.getTimeEnteredOrderBook() ? -1 : 1;
-            }
-        };
-        
-        marketOrders = new TreeSet<Order>(comparator);
-		pendingOrders = new TreeSet<Order>(comparator);
-		
-		//buyOrders = new HashMap<Double,Order>();
-		//sellOrders = new HashMap<Double,Order>();
-		
+		//TODO MOVE THIS TO LIBRARIAN
 		orderGuide = new OrderGuide(this);
 	}
 	
@@ -134,12 +98,6 @@ public class OrderBook  {
 		}
 	}
 	
-	public void addToPending(Order order) {
-		
-		synchronized(pendingOrders) {
-			pendingOrders.add(order);
-		}
-	}
 
 	public void addToBuyHash(Order order) {
 

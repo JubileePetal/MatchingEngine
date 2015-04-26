@@ -16,7 +16,6 @@ public class OrderGuide {
 		if(order.isActive()) {
 			takeActionDependentOnType(order);
 		} else {
-			placeInHibernation(order);
 		}
 	}
 	
@@ -35,10 +34,6 @@ public class OrderGuide {
 			System.out.println("This is a Market Order");
 			//TODO handle market order			
 		}		
-	}
-	
-	public void placeInHibernation(Order order) {
-		orderBook.addToPending(order);
 	}
 	
 	public void enterOrder(Order order) {
