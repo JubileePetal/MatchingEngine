@@ -4,28 +4,22 @@ import models.OpCodes;
 import models.Order;
 
 public class OrderGuide {
-
-	private OrderBook orderBook;
 	
-	public OrderGuide(OrderBook orderBook) {
-		this.orderBook = orderBook;
-	}
-	
-	public void handOffOrder(Order order) {
+	public void handOffOrder(Order order, OrderBook orderBook) {
 		
 		if(order.isActive()) {
-			takeActionDependentOnType(order);
+			takeActionDependentOnType(order, orderBook);
 		} else {
 		}
 	}
 	
-	public void takeActionDependentOnType(Order order) {
+	public void takeActionDependentOnType(Order order, OrderBook orderBook) {
 		
 		int typeOfOrder = order.getTypeOfOrder();
 		
 		if(typeOfOrder == OpCodes.LIMIT_ORDER) {
 			
-			enterOrder(order);
+			enterOrder(order, orderBook);
 			
 			System.out.println("This is a Limit Order");
 			
@@ -36,14 +30,14 @@ public class OrderGuide {
 		}		
 	}
 	
-	public void enterOrder(Order order) {
+	public void enterOrder(Order order, OrderBook orderBook) {
 		
 		int orderType = order.isBuyOrSell();
 		
 		if(orderType == OpCodes.BUY_ORDER) {
-			orderBook.addToBuyHash(order);
+			orderBook.addToBuyOrders(order);
 		} else if(orderType == OpCodes.SELL_ORDER) {
-			orderBook.addToSellHash(order);
+			orderBook.addToSellOrders(order);
 		}
 
 	}
