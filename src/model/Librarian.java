@@ -63,7 +63,7 @@ public class Librarian implements Observer {
 			
 			OrderBook ob = library.get(key);
 			ob.handOffOrder(order);
-			
+			order.setTimeEnteredOrderBook(System.currentTimeMillis());
 			
 		
 	}
