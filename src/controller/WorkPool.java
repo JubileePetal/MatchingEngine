@@ -7,13 +7,13 @@ import model.Librarian;
 public class WorkPool {
 	
 	private Librarian librarian;
-	private ArrayList<Worker> workers;
+	private ArrayList<Matcher> workers;
 
 	
 	/** PrincessOfTheUniverse **/
 	
 	public WorkPool() {
-		workers  = new ArrayList<Worker>();
+		workers  = new ArrayList<Matcher>();
 		
 	}
 	
@@ -21,7 +21,7 @@ public class WorkPool {
 		
 		for(int i = 0; i < nrOfWorkers; i++){
 			
-			Worker worker = new Worker(librarian);
+			Matcher worker = new Matcher(librarian);
 			workers.add(worker);
 		}
 		
@@ -31,7 +31,7 @@ public class WorkPool {
 	public void startWorkers(){
 
 		
-		for(Worker w : workers){
+		for(Matcher w : workers){
 			
 			(new Thread(w)).start();
 			

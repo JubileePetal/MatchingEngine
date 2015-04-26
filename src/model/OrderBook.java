@@ -25,6 +25,34 @@ public class OrderBook  {
 
 	}
 	
+	public boolean matchIsPossible() {
+		
+		double maxBuy = buyOrders.first().getPrice();
+		double minSell = sellOrders.first().getPrice();
+		
+		return maxBuy >= minSell;
+	}
+	
+	public Order getFirstBuy() {		
+		Order order = null;
+		
+		synchronized(buyOrders) {
+			order = buyOrders.pollFirst();
+		}
+		
+		return order;
+	}
+	
+	public Order getFirstSell() {
+		Order order = null;
+		
+		synchronized(sellOrders) {
+			order = sellOrders.pollFirst();
+		}
+		
+		return order;
+	}
+	
 
 /*	
 	public void handleMarketOrders() {
