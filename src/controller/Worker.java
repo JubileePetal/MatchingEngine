@@ -1,6 +1,7 @@
 package controller;
 
 import model.Librarian;
+import model.OrderBook;
 
 public class Worker implements Runnable {
 	
@@ -12,11 +13,11 @@ public class Worker implements Runnable {
 
 	@Override
 	public void run() {
-	
 		
-		String key = librarian.getFirstInQueue();
+		//TODO Should be while true loop
+		String key = librarian.getFirstInQueue(); //Synchronized
 		System.out.println("Got this from the queue:" + key);
-		
+		OrderBook orderBook = librarian.getOrderBook(key);
 	}
 
 }
