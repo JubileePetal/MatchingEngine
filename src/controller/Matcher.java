@@ -21,40 +21,52 @@ public class Matcher implements Runnable {
 	@Override
 	public void run() {
 		
-		//TODO Should be while true loop
-		String key = librarian.getFirstInQueue(); //Synchronized
-		System.out.println("Got this from the queue:" + key);
-		orderBook = librarian.getOrderBook(key);
-		// CHECK MARKET ORDERS
-		// CHECK LIMIT ORDERS
-		if(orderBook.matchIsPossible()) {
-			runMatchingAlgorithm();
+		while(true) {
+			
+			String key = librarian.getFirstInQueue();
+			System.out.println("Got this from the queue:" + key);
+			
+			orderBook = librarian.getOrderBook(key);
+			
+			// TODO CHECK MARKET ORDERS
+
+			if(orderBook.matchIsPossible()) {
+				runMatchingAlgorithm();
+			}
+			
+			librarian.putInQueue(key);
 		}
+
 	}
 	
-	private void runMatchingAlgorithm() {
+	public void runMatchingAlgorithm() {
 		
 		while(orderBook.matchIsPossible()) {
+			System.out.println("Match is possible");
 			Order buyOrder = orderBook.getFirstBuy();
 			Order sellOrder = orderBook.getFirstSell();
 			
+			System.out.println("buy price: " + buyOrder.getPrice() + " quantity: " + buyOrder.getQuantity());
+			System.out.println("sell price: " + sellOrder.getPrice() + " quantity: " + sellOrder.getQuantity());
+
 			if(buyOrder.getQuantity() > sellOrder.getQuantity()) {
+				System.out.println("buy quantity > sell quantity");
 				matchFromBuy(buyOrder, sellOrder);
+				
+			} else if(sellOrder.getQuantity() > buyOrder.getQuantity()) {
+				System.out.println("sell quantity > buy quantity");
+
+				matchFromSell(buyOrder, sellOrder);
+				
+			} else {
+				System.out.println("sell quantity == buy quantity");
+
+				equalMatch(buyOrder, sellOrder);
 			}
-			// if buyOrder Quantity is larger than sellOrder quantity
-				// sell is finished
-				// split buy into two orders, one with sell amount and one with remaining amount
-				// put one buy with remaining amount back
-				// create trade
-			// if sellorder quantity is larger than buyOrder quantity
-				// buy is finished
-				// split sell into two orders, one with buy amount and one with remaining amount
-				// put one sell with remaining amount back
-			// else if they have the same quantity just fricken match
 		}
 	}
 	
-	private void matchFromBuy(Order buyOrder, Order sellOrder) {
+	public void matchFromBuy(Order buyOrder, Order sellOrder) {
 		
 		int sellOrderQuantity = sellOrder.getQuantity();
 		int originalBuyOrderQuantity = buyOrder.getQuantity();
@@ -72,6 +84,30 @@ public class Matcher implements Runnable {
 		
 		tradeProcessor.createTrade(buyOrderCopy, sellOrder);
 	
+	}
+	
+	public void matchFromSell(Order buyOrder, Order sellOrder) {
+		
+		int originalSellOrderQuantity = sellOrder.getQuantity();
+		int buyOrderQuantity = buyOrder.getQuantity();
+		
+		// create a copy of the sell order, but set it's sell quantity
+		// to the amount being bought
+		Order sellOrderCopy = (Order) sellOrder.clone();		
+		sellOrderCopy.setOrderQuantity(buyOrderQuantity);
+		
+		// reduce the quantity of the original sell order with
+		// an amount equal to that being sold, and put it back
+		// in the orderBook
+		sellOrder.setOrderQuantity(originalSellOrderQuantity - buyOrderQuantity);
+		orderBook.addToSellOrders(sellOrder);
+		
+		tradeProcessor.createTrade(buyOrder, sellOrderCopy);
+	
+	}
+	
+	public void equalMatch(Order buyOrder, Order sellOrder) {
+		tradeProcessor.createTrade(buyOrder, sellOrder);;
 	}
 
 }
