@@ -10,7 +10,16 @@ public class Trade {
 	private String seller;
 
 	private int quantity;
-	
+	private double price; 
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
 	public Trade() {
 		// TODO Auto-generated constructor stub
 	}

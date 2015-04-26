@@ -8,9 +8,8 @@ public class TradeProcessor {
 	public TradeProcessor() {
 		// TODO Auto-generated constructor stub
 	}
-	
-	
-	public void createTrade(Order order1, Order order2){
+		
+	public Trade createTrade(Order order1, Order order2){
 		
 		Trade trade = new Trade();
 		if(order1.isBuyOrSell() == OpCodes.BUY_ORDER){
@@ -25,12 +24,13 @@ public class TradeProcessor {
 			
 		}
 		
-		//trade.setQuantity();
+		trade.setQuantity(order1.getQuantity());
+		trade.setPrice(order1.getPrice());
 		
 
 		
 		
-		
+		return trade;
  	}
 	
 	private void setSellerInfo(Order sellOrder, Trade trade){

@@ -59,6 +59,7 @@ public class Initializer {
 		greeter.setInstruments(instruments);
 		greeter.setLibrarian(librarian);
 		wp.setLibrarian(librarian);
+		//wp.setGreeter(greeter);
 		
 		for (Instrument i : instruments){
 			
