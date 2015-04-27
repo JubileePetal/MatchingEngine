@@ -14,6 +14,8 @@ import models.User;
 
 import com.google.gson.Gson;
 
+import controller.Trade;
+
 
 
 public class ClientHandler extends Observable implements Runnable {
@@ -102,6 +104,14 @@ public class ClientHandler extends Observable implements Runnable {
 		return order;
 	}
 	
+	public void sendTrade(Trade trade) {
+		
+		String json = gson.toJson(trade);
+		sender.sendToClient(OpCodes.TRADE, json);
+		
+	}
+	
+	
 	public void setConnected(boolean connected) {
 		this.connected = connected;
 	}
@@ -151,5 +161,7 @@ public class ClientHandler extends Observable implements Runnable {
 		}
 		
 	}
+
+
 }
 

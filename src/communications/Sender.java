@@ -53,7 +53,7 @@ public class Sender {
 		
 	}
 	
-	public void sendToClient(int opCode, String json){
+	public synchronized void sendToClient(int opCode, String json){
 		
 		Message message = new Message();
 		message.setType(opCode);
