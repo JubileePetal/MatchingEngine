@@ -77,18 +77,6 @@ public class Sender {
 		
 	}
 
-	public void orderAdded(Order order) {
-		String newJson = gson.toJson(order);
-		sendToClient(OpCodes.ORDER_ADDED, newJson);
-	}
-/*
-	public void confirmOrder(long uniqueOrderID) {
-		
-		String newJson = gson.toJson(uniqueOrderID);
-		sendToClient(OpCodes.ORDER_CONFIRMED,newJson);
-		
-	}
-*/	
 	
 
 }

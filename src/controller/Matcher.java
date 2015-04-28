@@ -4,6 +4,7 @@ import model.Librarian;
 import model.OrderBook;
 import models.OpCodes;
 import models.Order;
+import models.Trade;
 
 public class Matcher implements Runnable {
 	
@@ -142,7 +143,8 @@ public class Matcher implements Runnable {
 
 	public void equalMatch(Order myOrder, Order matchedOrder) {
 		myOrder.setPrice(matchedOrder.getPrice());
-		tradeProcessor.createTrade(myOrder, matchedOrder);
+		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
+		tradeProcessor.sendTrade(trade);
 	}
 	
 	public boolean borrowOrderBook() {

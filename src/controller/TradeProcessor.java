@@ -15,7 +15,7 @@ public class TradeProcessor {
 	}
 		
 	public Trade createTrade(Order order1, Order order2){
-		
+		System.out.println("creating trade");
 		Trade trade = new Trade();
 		if(order1.isBuyOrSell() == OpCodes.BUY_ORDER){
 			
@@ -63,7 +63,7 @@ public class TradeProcessor {
 		this.greeter = greeter;
 	}
 	
-	private void sendTrade(Trade trade){
+	public void sendTrade(Trade trade){
 		
 		ClientHandler seller = greeter.getTrader(trade.getSeller());
 		ClientHandler buyer  = greeter.getTrader(trade.getBuyer()); 
