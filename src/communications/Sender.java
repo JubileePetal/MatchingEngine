@@ -3,11 +3,14 @@ package communications;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.google.gson.Gson;
 
 import models.Message;
 import models.OpCodes;
+import models.Order;
 
 public class Sender {
 	
@@ -45,13 +48,6 @@ public class Sender {
 		return true;
 		
 	}
-
-	public void confirmOrder(long uniqueOrderID) {
-		
-		String newJson = gson.toJson(uniqueOrderID);
-		sendToClient(OpCodes.ORDER_CONFIRMED,newJson);
-		
-	}
 	
 	public synchronized void sendToClient(int opCode, String json){
 		
@@ -81,8 +77,6 @@ public class Sender {
 		
 	}
 
-
-	
 	
 
 }

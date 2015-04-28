@@ -4,6 +4,7 @@ import model.Librarian;
 import model.OrderBook;
 import models.OpCodes;
 import models.Order;
+import models.Trade;
 
 public class Matcher implements Runnable {
 	
@@ -24,7 +25,7 @@ public class Matcher implements Runnable {
 	public void processOrderBook() {
 		
 		if(borrowOrderBook()) {
-			System.out.println("Got this from the queue:" + currentInstrument);
+			//System.out.println("Got this from the queue:" + currentInstrument);
 
 			while(currentOrderBook.ordersInQueue()) {
 				processOrder();
@@ -56,6 +57,7 @@ public class Matcher implements Runnable {
 			} else if(type == OpCodes.SELL_ORDER) {
 				currentOrderBook.addToSellOrders(order);
 			}
+			tradeProcessor.orderPlacedInBook(order);
 		}
 	}
 	
@@ -141,7 +143,8 @@ public class Matcher implements Runnable {
 
 	public void equalMatch(Order myOrder, Order matchedOrder) {
 		myOrder.setPrice(matchedOrder.getPrice());
-		tradeProcessor.createTrade(myOrder, matchedOrder);
+		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
+		tradeProcessor.sendTrade(trade);
 	}
 	
 	public boolean borrowOrderBook() {

@@ -4,6 +4,7 @@ import communications.ClientHandler;
 import communications.Greeter;
 import models.OpCodes;
 import models.Order;
+import models.Trade;
 
 public class TradeProcessor {
 
@@ -14,7 +15,7 @@ public class TradeProcessor {
 	}
 		
 	public Trade createTrade(Order order1, Order order2){
-		
+		System.out.println("creating trade");
 		Trade trade = new Trade();
 		if(order1.isBuyOrSell() == OpCodes.BUY_ORDER){
 			
@@ -37,6 +38,11 @@ public class TradeProcessor {
 		return trade;
  	}
 	
+	public void orderPlacedInBook(Order order) {
+		ClientHandler owner = greeter.getTrader(order.getMyOwner());
+		owner.addOrder(order);
+	}
+	
 	private void setSellerInfo(Order sellOrder, Trade trade){
 		
 		trade.setSeller(sellOrder.getMyOwner());
@@ -57,7 +63,7 @@ public class TradeProcessor {
 		this.greeter = greeter;
 	}
 	
-	private void sendTrade(Trade trade){
+	public void sendTrade(Trade trade){
 		
 		ClientHandler seller = greeter.getTrader(trade.getSeller());
 		ClientHandler buyer  = greeter.getTrader(trade.getBuyer()); 
