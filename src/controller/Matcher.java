@@ -24,7 +24,7 @@ public class Matcher implements Runnable {
 	public void processOrderBook() {
 		
 		if(borrowOrderBook()) {
-			System.out.println("Got this from the queue:" + currentInstrument);
+			//System.out.println("Got this from the queue:" + currentInstrument);
 
 			while(currentOrderBook.ordersInQueue()) {
 				processOrder();
@@ -56,6 +56,7 @@ public class Matcher implements Runnable {
 			} else if(type == OpCodes.SELL_ORDER) {
 				currentOrderBook.addToSellOrders(order);
 			}
+			tradeProcessor.orderPlacedInBook(order);
 		}
 	}
 	

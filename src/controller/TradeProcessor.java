@@ -4,6 +4,7 @@ import communications.ClientHandler;
 import communications.Greeter;
 import models.OpCodes;
 import models.Order;
+import models.Trade;
 
 public class TradeProcessor {
 
@@ -36,6 +37,11 @@ public class TradeProcessor {
 		
 		return trade;
  	}
+	
+	public void orderPlacedInBook(Order order) {
+		ClientHandler owner = greeter.getTrader(order.getMyOwner());
+		owner.addOrder(order);
+	}
 	
 	private void setSellerInfo(Order sellOrder, Trade trade){
 		

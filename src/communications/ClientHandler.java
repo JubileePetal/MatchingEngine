@@ -5,16 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Observable;
 
 import models.Message;
 import models.OpCodes;
 import models.Order;
+import models.Trade;
 import models.User;
 
 import com.google.gson.Gson;
 
-import controller.Trade;
 
 
 
@@ -29,10 +30,12 @@ public class ClientHandler extends Observable implements Runnable {
 	private Sender sender;
 	private Receiver receiver;
 	private ArrayList<Order> myOrders;
+	//private HashMap<Long, Order> myOrders;
 	
 	public ClientHandler(Socket clientSocket, Greeter greetedBy){
 		
 		myOrders	 = new ArrayList<Order>();
+		//myOrders	 = new HashMap<Long, Order>();
 		greeter 	 = greetedBy;
 		socket 		 = clientSocket;
 		sender 		 = new Sender(this);
@@ -59,7 +62,7 @@ public class ClientHandler extends Observable implements Runnable {
 		switch (user.getUserType()) {
 			case OpCodes.TRADER:
 				greeter.addTrader(username, this);
-				System.out.println("Trader accepted.");
+				System.out.println("Trader accepted: " + this.username);
 				userStatus = OpCodes.LOG_IN_ACCEPTED;
 				break;
 				
@@ -99,7 +102,6 @@ public class ClientHandler extends Observable implements Runnable {
 	public Order unpackOrder(Message message){
 		
 		Order order =  gson.fromJson(message.getJson(),Order.class);
-		myOrders.add(order);
 		order.setId(greeter.getUniqueOrderID());
 		return order;
 	}
@@ -145,8 +147,9 @@ public class ClientHandler extends Observable implements Runnable {
 						case OpCodes.ORDER:
 							System.out.println("Got an order.");
 							Order order = unpackOrder(message);
+							order.setTimeEnteredSystem(System.currentTimeMillis());
 							update(order);
-							sender.confirmOrder(order.getId());
+							//sender.confirmOrder(order.getId());
 							break;
 					
 						default:
@@ -160,6 +163,11 @@ public class ClientHandler extends Observable implements Runnable {
 			
 		}
 		
+	}
+
+	public void addOrder(Order order) {
+		myOrders.add(order);
+		sender.orderAdded(order);
 	}
 
 
