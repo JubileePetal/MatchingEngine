@@ -113,6 +113,12 @@ public class ClientHandler extends Observable implements Runnable {
 		
 	}
 	
+	public void addOrder(Order order) {
+		myOrders.add(order);
+		String json = gson.toJson(order);
+		sender.sendToClient(OpCodes.ORDER_ADDED, json);
+		//sender.orderAdded(order);
+	}	
 	
 	public void setConnected(boolean connected) {
 		this.connected = connected;
@@ -165,10 +171,7 @@ public class ClientHandler extends Observable implements Runnable {
 		
 	}
 
-	public void addOrder(Order order) {
-		myOrders.add(order);
-		sender.orderAdded(order);
-	}
+
 
 
 }
