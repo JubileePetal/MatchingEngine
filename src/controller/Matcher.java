@@ -2,112 +2,192 @@ package controller;
 
 import model.Librarian;
 import model.OrderBook;
+import models.OpCodes;
 import models.Order;
 
 public class Matcher implements Runnable {
 	
 	private Librarian librarian;
 	private TradeProcessor tradeProcessor;
-	private OrderBook orderBook;
+	private OrderBook currentOrderBook;
+	private String currentInstrument;
+
+	@Override
+	public void run() {
+		
+		while(true) {
+			processOrderBook();
+		}
+
+	}
 	
-	public Matcher(Librarian librarian) {
+	public void processOrderBook() {
+		
+		if(borrowOrderBook()) {
+			System.out.println("Got this from the queue:" + currentInstrument);
+
+			while(currentOrderBook.ordersInQueue()) {
+				processOrder();
+			}
+			
+			returnOrderBook();
+		}
+
+	}
+	
+	public void processOrder() {
+		
+		Order order = currentOrderBook.getFirstPending();
+		int type = order.isBuyOrSell();
+		boolean quantityRemains = true;
+		
+		System.out.println("got order: price: " + order.getPrice() + " quantity: " + order.getQuantity());
+		
+		while(currentOrderBook.canMatch(order, type) && quantityRemains) {
+			System.out.println("match is possible");
+			quantityRemains = match(order);
+		}
+		
+		if(quantityRemains) {
+			
+			if(type == OpCodes.BUY_ORDER) {
+				currentOrderBook.addToBuyOrders(order);
+				
+			} else if(type == OpCodes.SELL_ORDER) {
+				currentOrderBook.addToSellOrders(order);
+			}
+		}
+	}
+	
+	public Order getMatchedOrder(int myType) {
+		
+		Order matchedOrder;
+		
+		if(myType == OpCodes.BUY_ORDER) {
+			matchedOrder = currentOrderBook.getFirstSell();
+		} else {
+			matchedOrder = currentOrderBook.getFirstBuy();
+		}
+		
+		return matchedOrder;
+	}
+	
+	public Order getClonedOrder(Order orderToClone, int newQuantity) {
+		Order newOrder = (Order) orderToClone.clone();
+		newOrder.setOrderQuantity(newQuantity);
+		return newOrder;
+	}
+	
+	public void putMatchedOrderBack(Order matchedOrder) {
+		
+		int matchedType = matchedOrder.isBuyOrSell();
+		
+		if(matchedType == OpCodes.BUY_ORDER) {
+			currentOrderBook.addToBuyOrders(matchedOrder);
+		} else {
+			currentOrderBook.addToSellOrders(matchedOrder);
+		}
+	}
+	
+	public boolean match(Order myOrder) {
+
+		boolean myQuantityRemains = false;
+		int myQuantity = myOrder.getQuantity();
+		int myType = myOrder.isBuyOrSell();
+		
+		Order matchedOrder = getMatchedOrder(myType);
+		int matchedQuantity = matchedOrder.getQuantity();
+		
+		System.out.println("matchedOrder: price: " + matchedOrder.getPrice() + " quantity: " + matchedOrder.getQuantity());
+		
+		Order orderClone;
+		
+		if(myQuantity == matchedQuantity) {
+			
+			System.out.println("Equal quantities");
+			
+			equalMatch(myOrder, matchedOrder);
+			
+			myQuantityRemains = false;
+			
+		} else {
+			
+			if(myQuantity > matchedQuantity) {
+				System.out.println("My quantity > matched quantity");
+				orderClone = getClonedOrder(myOrder, matchedQuantity);
+				equalMatch(orderClone, matchedOrder);
+				
+				int remainingQuantity = myQuantity - matchedQuantity;
+				myOrder.setOrderQuantity(remainingQuantity);
+				
+				myQuantityRemains = true;
+				
+			} else if(myQuantity < matchedQuantity) {
+				System.out.println("My Quantity < matched quantity");
+				orderClone = getClonedOrder(matchedOrder, myQuantity);
+				equalMatch(myOrder, orderClone);
+				
+				int remainingQuantity = matchedQuantity - myQuantity;
+				matchedOrder.setOrderQuantity(remainingQuantity);
+				
+				putMatchedOrderBack(matchedOrder);
+				myQuantityRemains = false;
+				
+			} 		
+		}
+		
+		return myQuantityRemains;
+	}
+
+	public void equalMatch(Order myOrder, Order matchedOrder) {
+		myOrder.setPrice(matchedOrder.getPrice());
+		tradeProcessor.createTrade(myOrder, matchedOrder);
+	}
+	
+	public boolean borrowOrderBook() {
+		
+		currentInstrument = librarian.getFirstInQueue();
+		
+		if(currentInstrument != null) {
+			currentOrderBook = librarian.getOrderBook(currentInstrument);
+			return true;
+		} else {
+			currentOrderBook = null;
+			return false;
+		}
+		
+	}
+	
+	public void returnOrderBook() {
+
+		librarian.putInQueue(currentInstrument);
+	}
+
+	
+	public Librarian getLibrarian() {
+		return librarian;
+	}
+	public TradeProcessor getTradeProcessor() {
+		return tradeProcessor;
+	}
+	
+	public OrderBook getCurrentOrderBook() {
+		return currentOrderBook;
+	}
+	
+	public String getCurrentInstrument() {
+		return currentInstrument;
+	}
+	
+	public void setLibrarian(Librarian librarian) {
 		this.librarian = librarian;
 	}
 	
 	public void setTradeProcessor(TradeProcessor tradeProcessor) {
 		this.tradeProcessor = tradeProcessor;
 	}
-
-	@Override
-	public void run() {
-		
-		while(true) {
-			
-			String key = librarian.getFirstInQueue();
-			System.out.println("Got this from the queue:" + key);
-			
-			orderBook = librarian.getOrderBook(key);
-			
-			// TODO CHECK MARKET ORDERS
-
-			if(orderBook.matchIsPossible()) {
-				runMatchingAlgorithm();
-			}
-			
-			librarian.putInQueue(key);
-		}
-
-	}
 	
-	public void runMatchingAlgorithm() {
-		
-		while(orderBook.matchIsPossible()) {
-			System.out.println("Match is possible");
-			Order buyOrder = orderBook.getFirstBuy();
-			Order sellOrder = orderBook.getFirstSell();
-			
-			System.out.println("buy price: " + buyOrder.getPrice() + " quantity: " + buyOrder.getQuantity());
-			System.out.println("sell price: " + sellOrder.getPrice() + " quantity: " + sellOrder.getQuantity());
-
-			if(buyOrder.getQuantity() > sellOrder.getQuantity()) {
-				System.out.println("buy quantity > sell quantity");
-				matchFromBuy(buyOrder, sellOrder);
-				
-			} else if(sellOrder.getQuantity() > buyOrder.getQuantity()) {
-				System.out.println("sell quantity > buy quantity");
-
-				matchFromSell(buyOrder, sellOrder);
-				
-			} else {
-				System.out.println("sell quantity == buy quantity");
-
-				equalMatch(buyOrder, sellOrder);
-			}
-		}
-	}
-	
-	public void matchFromBuy(Order buyOrder, Order sellOrder) {
-		
-		int sellOrderQuantity = sellOrder.getQuantity();
-		int originalBuyOrderQuantity = buyOrder.getQuantity();
-		
-		// create a copy of the buy order, but set it's buy quantity
-		// to the amount being sold
-		Order buyOrderCopy = (Order) buyOrder.clone();		
-		buyOrderCopy.setOrderQuantity(sellOrderQuantity);
-		
-		// reduce the quantity of the original buy order with
-		// an amount equal to that being bought, and put it back
-		// in the orderBook
-		buyOrder.setOrderQuantity(originalBuyOrderQuantity - sellOrderQuantity);
-		orderBook.addToBuyOrders(buyOrder);
-		
-		tradeProcessor.createTrade(buyOrderCopy, sellOrder);
-	
-	}
-	
-	public void matchFromSell(Order buyOrder, Order sellOrder) {
-		
-		int originalSellOrderQuantity = sellOrder.getQuantity();
-		int buyOrderQuantity = buyOrder.getQuantity();
-		
-		// create a copy of the sell order, but set it's sell quantity
-		// to the amount being bought
-		Order sellOrderCopy = (Order) sellOrder.clone();		
-		sellOrderCopy.setOrderQuantity(buyOrderQuantity);
-		
-		// reduce the quantity of the original sell order with
-		// an amount equal to that being sold, and put it back
-		// in the orderBook
-		sellOrder.setOrderQuantity(originalSellOrderQuantity - buyOrderQuantity);
-		orderBook.addToSellOrders(sellOrder);
-		
-		tradeProcessor.createTrade(buyOrder, sellOrderCopy);
-	
-	}
-	
-	public void equalMatch(Order buyOrder, Order sellOrder) {
-		tradeProcessor.createTrade(buyOrder, sellOrder);;
-	}
-
 }
+	
+	
+	

@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import model.Librarian;
 import model.OrderBook;
-import model.TreeSetCreator;
 import models.Instrument;
 import models.Order;
 
@@ -12,78 +11,262 @@ import org.junit.Before;
 import org.junit.Test;
 
 import controller.Matcher;
+import controller.TradeProcessor;
+
+import static org.mockito.Mockito.*;
 
 public class MatcherTest {
 
-	private Matcher matcher;
-	OrderBook ob;
+	private final Matcher matcher = spy(new Matcher());
+	OrderBook obA;
+	OrderBook obB;
+	
+	
 	
 	@Before
 	public void setUp() throws Exception {
 		
-		Instrument instrument = new Instrument();
-		instrument.setAbbreviation("ERB");
+		Instrument instrumentA = new Instrument();
+		instrumentA.setAbbreviation("ERB");
+		Instrument instrumentB = new Instrument();
+		instrumentB.setAbbreviation("HMA");
 		
 		Librarian librarian = new Librarian();
-		librarian.addOrderBook(instrument);
+		librarian.addOrderBook(instrumentA);
+		librarian.addOrderBook(instrumentB);
 		
-		ob = librarian.getOrderBook(instrument.getAbbreviation());
+		obA = librarian.getOrderBook(instrumentA.getAbbreviation());
+		obB = librarian.getOrderBook(instrumentB.getAbbreviation());
 		
-		Order a = new Order();
-		a.setTimeEnteredOrderBook(0);
-		a.setPrice(50.0);
-		Order b = new Order();
-		b.setTimeEnteredOrderBook(6);
-		b.setPrice(40.0);
-		Order c = new Order();
-		c.setTimeEnteredOrderBook(2);
-		c.setPrice(60.0);
-		Order d = new Order();
-		d.setTimeEnteredOrderBook(3);
-		d.setPrice(70.0);
-		Order e = new Order();
-		e.setTimeEnteredOrderBook(4);
-		e.setPrice(45.0);
+		//matcher = new Matcher();
+		matcher.setLibrarian(librarian);
+		matcher.setTradeProcessor(new TradeProcessor());
 		
-		ob.addToSellOrders(a);
-		ob.addToSellOrders(b);
-		ob.addToSellOrders(c);
-		ob.addToSellOrders(d);
-		ob.addToSellOrders(e);
-		
-		Order f = new Order();
-		f.setTimeEnteredOrderBook(0);
-		f.setPrice(10.0);
-		Order g = new Order();
-		g.setTimeEnteredOrderBook(6);
-		g.setPrice(50.0);
-		Order h = new Order();
-		h.setTimeEnteredOrderBook(2);
-		h.setPrice(20.0);
-		Order i = new Order();
-		i.setTimeEnteredOrderBook(3);
-		i.setPrice(50.0);
-		Order j = new Order();
-		j.setTimeEnteredOrderBook(4);
-		j.setPrice(40.0);
-		
-		ob.addToBuyOrders(f);
-		ob.addToBuyOrders(g);
-		ob.addToBuyOrders(h);
-		ob.addToBuyOrders(i);
-		ob.addToBuyOrders(j);
-		
-		matcher = new Matcher(librarian);
+		assertNotNull(matcher.getLibrarian());
+		assertNotNull(matcher.getTradeProcessor());
+	}
+/*
+	@Test
+	public void testCanBorrow() {
+		matcher.borrowOrderBook();
+		assertNotNull(matcher.getCurrentOrderBook());
 	}
 	
 	@Test
-	public void test() {
-		assertTrue(ob.matchIsPossible());
+	public void testCannotBorrow() {
+		
+		// librarian is set up with two books, 
+		// borrowing a third shouldn't work
+		matcher.borrowOrderBook();
+		matcher.borrowOrderBook();
+		matcher.borrowOrderBook();
+		assertNull(matcher.getCurrentOrderBook());
 	}
 	
 	@Test
-	public void testA() {
-		matcher.run();
+	public void testCanReturn() {
+		matcher.processOrderBook();
+		verify(matcher, times(1)).returnOrderBook();
+	}
+	
+	@Test
+	public void testCannotReturn() {
+		// if the matcher can't borrow a book,
+		// then return will never be called
+		matcher.borrowOrderBook();
+		matcher.borrowOrderBook();
+		matcher.processOrderBook();
+		verify(matcher, times(0)).returnOrderBook();
+	}
+
+	@Test
+	public void testNoPendingsNoProcess() {
+		// if the current orderbook has no pending orders
+		// then no processing of an order can be made
+		matcher.processOrderBook();
+		verify(matcher, times(0)).processOrder();
+	}
+	
+	@Test
+	public void testOnePendingExistDoProcess() {
+		
+		Order simpleSell = new Order();
+		obA.addToQueue(simpleSell);
+		
+		// if the current orderbook has one pending order
+		// then matcher should process the order
+		matcher.processOrderBook();
+		verify(matcher, times(1)).processOrder();
+	}
+	
+	@Test
+	public void testTwoPendingsExistDoProcess() {
+		
+		Order simpleSell = new Order();
+		obA.addToQueue(simpleSell);
+		Order simpleSell2 = new Order();
+		obA.addToQueue(simpleSell2);
+		
+		// if the current orderbook has two pending orders
+		// then matcher should process two orders
+		matcher.processOrderBook();
+		verify(matcher, times(2)).processOrder();
+	}
+	
+	@Test
+	public void testMatchIsCalledSell() {
+		
+		Order simpleBuy = new Order();
+		simpleBuy.setPrice(10);
+		simpleBuy.setOrderQuantity(20);
+		simpleBuy.setToBuyOrder();
+		
+		obA.addToBuyOrders(simpleBuy);
+		
+		Order simpleSell = new Order();
+		simpleSell.setPrice(10);
+		simpleSell.setOrderQuantity(20);
+		simpleSell.setToSellOrder();
+		
+		obA.addToQueue(simpleSell);	
+		
+		matcher.borrowOrderBook();
+		matcher.processOrder();
+		verify(matcher).match(simpleSell);
+		matcher.returnOrderBook();
+	}
+	
+	@Test
+	public void testMatchIsCalledBuy() {
+		
+		Order simpleSell = new Order();
+		simpleSell.setPrice(10);
+		simpleSell.setOrderQuantity(20);
+		simpleSell.setToSellOrder();
+		
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = new Order();
+		simpleBuy.setPrice(10);
+		simpleBuy.setOrderQuantity(20);
+		simpleBuy.setToBuyOrder();
+		
+		obA.addToQueue(simpleBuy);
+		
+		matcher.borrowOrderBook();
+		matcher.processOrder();
+		verify(matcher).match(simpleBuy);
+		matcher.returnOrderBook();
+	}
+	
+	@Test
+	public void testMatchIsNotCalledIfSellEmpty() {
+		
+		Order simpleBuy = new Order();
+		simpleBuy.setPrice(10);
+		simpleBuy.setOrderQuantity(20);
+		simpleBuy.setToBuyOrder();
+		
+		obA.addToQueue(simpleBuy);
+		
+		matcher.borrowOrderBook();
+		matcher.processOrder();
+		verify(matcher, times(0)).match(simpleBuy);
+		matcher.returnOrderBook();
+	}
+	
+	@Test
+	public void testMatchIsNotCalledIfBuyEmpty() {
+		
+		Order simpleSell = new Order();
+		simpleSell.setPrice(10);
+		simpleSell.setOrderQuantity(20);
+		simpleSell.setToSellOrder();
+		
+		obA.addToQueue(simpleSell);	
+		
+		matcher.borrowOrderBook();
+		matcher.processOrder();
+		verify(matcher, times(0)).match(simpleSell);
+		matcher.returnOrderBook();
+	}
+	
+	@Test
+	public void testNoRemainsIfEqual() {
+		
+		Order simpleSell = new Order();
+		simpleSell.setPrice(10);
+		simpleSell.setOrderQuantity(20);
+		simpleSell.setToSellOrder();
+		
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = new Order();
+		simpleBuy.setPrice(10);
+		simpleBuy.setOrderQuantity(20);
+		simpleBuy.setToBuyOrder();
+		
+		matcher.borrowOrderBook();
+		assertFalse(matcher.match(simpleBuy));
+		matcher.returnOrderBook();		
+	}
+	
+	@Test
+	public void testNoRemainsIfPendindQuantityIsLess() {
+		
+		Order simpleSell = new Order();
+		simpleSell.setPrice(10);
+		simpleSell.setOrderQuantity(20);
+		simpleSell.setToSellOrder();
+		
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = new Order();
+		simpleBuy.setPrice(10);
+		simpleBuy.setOrderQuantity(10);
+		simpleBuy.setToBuyOrder();
+		
+		matcher.borrowOrderBook();
+		assertFalse(matcher.match(simpleBuy));
+		matcher.returnOrderBook();		
+	}
+	
+	@Test
+	public void testRemainsExistIfPendingQuantityIsLarger() {
+		
+		Order simpleSell = new Order();
+		simpleSell.setPrice(10);
+		simpleSell.setOrderQuantity(20);
+		simpleSell.setToSellOrder();
+		
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = new Order();
+		simpleBuy.setPrice(10);
+		simpleBuy.setOrderQuantity(30);
+		simpleBuy.setToBuyOrder();
+		
+		matcher.borrowOrderBook();
+		assertTrue(matcher.match(simpleBuy));
+		matcher.returnOrderBook();		
+	}
+	*/
+	
+	@Test
+	public void testMatch() {
+		for(Order order : OrderCollections.getOrderListA()) {
+			order.setToBuyOrder();
+			obA.addToBuyOrders(order);
+			System.out.println("buy order: price: " + order.getPrice() + " quantity: " + order.getQuantity());
+		}
+		
+		for(Order order : OrderCollections.getOrderListB()) {
+			order.setToSellOrder();
+			obA.addToQueue(order);
+			System.out.println("pending sell order: price: " + order.getPrice() + " quantity: " + order.getQuantity());
+		}
+		matcher.processOrderBook();
+		System.out.println("order in book price: " + obA.getFirstSell().getPrice());
 	}
 
 }

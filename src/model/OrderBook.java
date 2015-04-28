@@ -1,43 +1,60 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.TreeSet;
 
+import java.util.LinkedList;
+import java.util.TreeSet;
 import models.OpCodes;
 import models.Order;
 
 
 public class OrderBook  {
 
-	private TreeSet<Order> marketOrders;
 	private TreeSet<Order> buyOrders;
 	private TreeSet<Order> sellOrders;
+	private LinkedList<Order> pendingOrders;
 	
 	public OrderBook() {
 		
+		pendingOrders = new LinkedList<Order>();
 		buyOrders = TreeSetCreator.createBuyOrderSet();
 		sellOrders = TreeSetCreator.createSellOrderSet();
-		marketOrders = TreeSetCreator.createMarketOrderSet();
 
 	}
 	
-	public boolean matchIsPossible() {
+	public boolean canMatch(Order order, int type) {
 		
-		if(buyOrders.isEmpty() || sellOrders.isEmpty()) {
+		boolean canMatch = false;
+		
+		double myPrice = order.getPrice();
 			
-			return false;
+		if(type == OpCodes.BUY_ORDER) {
 			
-		} else {
+			if(!sellOrders.isEmpty()) {
+				double minSell = sellOrders.first().getPrice();			
+				canMatch = myPrice >= minSell;
+			}
+		} else if(type == OpCodes.SELL_ORDER) {
 			
-			double maxBuy = buyOrders.first().getPrice();
-			double minSell = sellOrders.first().getPrice();
-			
-			return maxBuy >= minSell;
+			if(!buyOrders.isEmpty()) {
+				double maxBuy = buyOrders.first().getPrice();			
+				canMatch = myPrice <= maxBuy;
+			}
 		}
+		
+		return canMatch;
+	}
+	
+	public boolean ordersInQueue() {
+		return !pendingOrders.isEmpty();
+	}
+	
+	public Order getFirstPending() {
+		Order order = null;
+		
+		synchronized(pendingOrders) {
+			order = pendingOrders.poll();
+		}
+		return order;
 	}
 	
 	public Order getFirstBuy() {		
@@ -59,36 +76,6 @@ public class OrderBook  {
 		
 		return order;
 	}
-	
-
-/*	
-	public void handleMarketOrders() {
-		
-		boolean workExists = marketOrders.isEmpty() ? false : true;
-		
-		while(workExists) {
-			Order order = marketOrders.pollFirst();
-			workExists = false;
-		}
-	}
-*/	
-	/*
-	public boolean isMatchPossible() {
-		
-		//double maxBuy = getMaxBuy().doubleValue();
-		double minSell = getMinSell().doubleValue();
-		
-		//return maxBuy > minSell ? true : false;
-	}
-	*/
-	
-	public void addToMarketOrders(Order order) {
-		
-		synchronized(marketOrders) {
-			marketOrders.add(order);
-		}
-	}
-	
 
 	public void addToBuyOrders(Order order) {
 		
@@ -102,6 +89,14 @@ public class OrderBook  {
 		synchronized(sellOrders) {
 			sellOrders.add(order);
 		}
+	}
+
+	public void addToQueue(Order order) {
+		
+		synchronized(pendingOrders) {
+			pendingOrders.add(order);
+		}
+		
 	}
 	
 

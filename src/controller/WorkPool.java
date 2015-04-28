@@ -25,7 +25,8 @@ public class WorkPool {
 		
 		for(int i = 0; i < nrOfWorkers; i++){
 			
-			Matcher matcher = new Matcher(librarian);
+			Matcher matcher = new Matcher();
+			matcher.setLibrarian(librarian);
 			matcher.setTradeProcessor(tradeProcessor);
 			workers.add(matcher);
 		}

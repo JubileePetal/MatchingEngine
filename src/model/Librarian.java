@@ -12,14 +12,11 @@ public class Librarian implements Observer {
 	
 	private HashMap<String,OrderBook> library;
 	private PriorityQueue<String> queue;
-	
-	private OrderGuide orderGuide;
-	
+		
 	public Librarian() {
 		
 		library = new HashMap<String, OrderBook>();
 		queue 	= new PriorityQueue<String>();
-		orderGuide = new OrderGuide();
 	}
 	
 	public void putInQueue(String abbreviation){
@@ -65,7 +62,7 @@ public class Librarian implements Observer {
 			String key = order.getInstrument().getAbbreviation();
 			
 			OrderBook ob = library.get(key);
-			orderGuide.handOffOrder(order, ob);
+			ob.addToQueue(order);
 		
 	}
 	
