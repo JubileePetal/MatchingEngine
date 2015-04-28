@@ -17,7 +17,7 @@ public class MainServer {
 			Initializer initializer = new Initializer();
 			initializer.establishDependencies();
 			initializer.setupWorkPool(nrOfWorkers);
-			initializer.startWorkers();
+			//initializer.startWorkers();
 			initializer.startGreeter();
 
 			
