@@ -1,7 +1,7 @@
 package controller;
 
+import communications.ClientHandler;
 import communications.Greeter;
-
 import models.OpCodes;
 import models.Order;
 
@@ -48,19 +48,25 @@ public class TradeProcessor {
 		trade.setBuyer(buyOrder.getMyOwner());
 		trade.setBuyOrderID(buyOrder.getId());
 	}
-
-	
 	
 	public Greeter getGreeter() {
 		return greeter;
 	}
-
-
+	
 	public void setGreeter(Greeter greeter) {
 		this.greeter = greeter;
 	}
 	
+	private void sendTrade(Trade trade){
+		
+		ClientHandler seller = greeter.getTrader(trade.getSeller());
+		ClientHandler buyer  = greeter.getTrader(trade.getBuyer()); 
+		
+		seller.sendTrade(trade);
+		buyer.sendTrade(trade);
 	
+		
+	}
 	
 }
 

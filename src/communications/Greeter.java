@@ -146,4 +146,9 @@ public class Greeter implements Runnable {
 		return newOrderID;
 	}
 	
+	public ClientHandler getTrader(String traderUsername){
+		
+		return traders.get(traderUsername);
+	}
+	
 }
