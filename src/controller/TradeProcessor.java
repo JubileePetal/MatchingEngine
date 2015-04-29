@@ -70,7 +70,6 @@ public class TradeProcessor {
 		
 		seller.sendTrade(trade);
 		buyer.sendTrade(trade);
-	
 		
 	}
 	
