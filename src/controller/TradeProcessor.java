@@ -31,7 +31,7 @@ public class TradeProcessor {
 		
 		trade.setQuantity(order1.getQuantity());
 		trade.setPrice(order1.getPrice());
-		
+		trade.setInstrument(order1.getInstrument());
 
 		
 		
