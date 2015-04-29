@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import model.Librarian;
+import models.BookStatus;
 import models.Instrument;
 
 import com.google.gson.Gson;
@@ -149,6 +150,24 @@ public class Greeter implements Runnable {
 	public ClientHandler getTrader(String traderUsername){
 		
 		return traders.get(traderUsername);
+	}
+
+	public ArrayList<ClientHandler> getAllHandlers() {
+		
+		ArrayList<ClientHandler> handlers = new ArrayList<ClientHandler>();
+		for(ClientHandler handler : traders.values()) {
+			handlers.add(handler);
+		}
+		for(ClientHandler handler : admins.values()) {
+			handlers.add(handler);
+		}
+		for(ClientHandler handler : isvrs.values()) {
+			handlers.add(handler);
+		}
+		for(ClientHandler handler : regulators.values()) {
+			handlers.add(handler);
+		}
+		return handlers;
 	}
 	
 }

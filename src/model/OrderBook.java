@@ -28,7 +28,6 @@ public class OrderBook  {
 		double myPrice = order.getPrice();
 			
 		if(type == OpCodes.BUY_ORDER) {
-			
 			if(!sellOrders.isEmpty()) {
 				double minSell = sellOrders.first().getPrice();			
 				canMatch = myPrice >= minSell;
@@ -97,6 +96,15 @@ public class OrderBook  {
 			pendingOrders.add(order);
 		}
 		
+	}
+
+	public TreeSet<Order> getBuyOrders() {
+		return (TreeSet<Order>) buyOrders.clone();
+	}
+
+	public TreeSet<Order> getSellOrders() {
+
+		return (TreeSet<Order>) sellOrders.clone();
 	}
 	
 

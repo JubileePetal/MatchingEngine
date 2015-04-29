@@ -2,6 +2,7 @@ package controller;
 
 import model.Librarian;
 import model.OrderBook;
+import models.BookStatus;
 import models.OpCodes;
 import models.Order;
 import models.Trade;
@@ -38,11 +39,13 @@ public class Matcher implements Runnable {
 	
 	public void processOrder() {
 		
+		
 		Order order = currentOrderBook.getFirstPending();
 		int type = order.isBuyOrSell();
 		boolean quantityRemains = true;
 		
-		System.out.println("got order: price: " + order.getPrice() + " quantity: " + order.getQuantity());
+		System.out.println("got order: price: " + order.getPrice() + " quantity: " + order.getQuantity() + "buy or sell: " + order.isBuyOrSell());
+
 		
 		while(currentOrderBook.canMatch(order, type) && quantityRemains) {
 			System.out.println("match is possible");
@@ -50,7 +53,7 @@ public class Matcher implements Runnable {
 		}
 		
 		if(quantityRemains) {
-			
+
 			if(type == OpCodes.BUY_ORDER) {
 				currentOrderBook.addToBuyOrders(order);
 				
@@ -58,7 +61,17 @@ public class Matcher implements Runnable {
 				currentOrderBook.addToSellOrders(order);
 			}
 			tradeProcessor.orderPlacedInBook(order);
+			processMarketData(order);
 		}
+	}
+	
+	public void processMarketData(Order order) {
+		
+		BookStatus bookStatus = new BookStatus(order.getInstrument().getName());
+		bookStatus.generateBuyLevels(currentOrderBook.getBuyOrders());
+		bookStatus.generateSellLevels(currentOrderBook.getSellOrders());
+		tradeProcessor.broadCastMarketData(bookStatus);
+		System.out.println("Sent market data, buy: " + currentOrderBook.getBuyOrders().size() + " sell: " + currentOrderBook.getSellOrders().size());
 	}
 	
 	public Order getMatchedOrder(int myType) {
@@ -145,6 +158,8 @@ public class Matcher implements Runnable {
 		myOrder.setPrice(matchedOrder.getPrice());
 		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
 		tradeProcessor.sendTrade(trade);
+		
+		processMarketData(myOrder);
 	}
 	
 	public boolean borrowOrderBook() {
