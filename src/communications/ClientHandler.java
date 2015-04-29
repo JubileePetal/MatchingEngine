@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 
+import model.BookStatus;
 import models.Message;
 import models.OpCodes;
 import models.Order;
@@ -169,6 +170,11 @@ public class ClientHandler extends Observable implements Runnable {
 			
 		}
 		
+	}
+
+	public void sendMarketData(BookStatus bookStatus) {
+		String json = gson.toJson(bookStatus);
+		sender.sendToClient(OpCodes.MARKET_DATA, json);
 	}
 
 

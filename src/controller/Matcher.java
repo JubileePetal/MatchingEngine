@@ -1,5 +1,6 @@
 package controller;
 
+import model.BookStatus;
 import model.Librarian;
 import model.OrderBook;
 import models.OpCodes;
@@ -58,7 +59,16 @@ public class Matcher implements Runnable {
 				currentOrderBook.addToSellOrders(order);
 			}
 			tradeProcessor.orderPlacedInBook(order);
+			processMarketData(order);
 		}
+	}
+	
+	public void processMarketData(Order order) {
+		
+		BookStatus bookStatus = new BookStatus(order.getInstrument().getName());
+		bookStatus.generateBuyLevels(currentOrderBook.getBuyOrders());
+		bookStatus.generateSellLevels(currentOrderBook.getSellOrders());
+		tradeProcessor.broadCastMarketData(bookStatus);
 	}
 	
 	public Order getMatchedOrder(int myType) {
@@ -145,6 +155,8 @@ public class Matcher implements Runnable {
 		myOrder.setPrice(matchedOrder.getPrice());
 		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
 		tradeProcessor.sendTrade(trade);
+		
+		processMarketData(myOrder);
 	}
 	
 	public boolean borrowOrderBook() {

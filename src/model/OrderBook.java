@@ -98,6 +98,15 @@ public class OrderBook  {
 		}
 		
 	}
+
+	public TreeSet<Order> getBuyOrders() {
+		return buyOrders;
+	}
+
+	public TreeSet<Order> getSellOrders() {
+
+		return sellOrders;
+	}
 	
 
 }

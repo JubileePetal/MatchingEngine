@@ -254,6 +254,7 @@ public class MatcherTest {
 	
 	@Test
 	public void testMatch() {
+		
 		for(Order order : OrderCollections.getOrderListA()) {
 			order.setToBuyOrder();
 			obA.addToBuyOrders(order);

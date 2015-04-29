@@ -1,7 +1,10 @@
 package controller;
 
+import java.util.ArrayList;
+
 import communications.ClientHandler;
 import communications.Greeter;
+import model.BookStatus;
 import models.OpCodes;
 import models.Order;
 import models.Trade;
@@ -70,6 +73,14 @@ public class TradeProcessor {
 		
 		seller.sendTrade(trade);
 		buyer.sendTrade(trade);
+		
+	}
+
+	public void broadCastMarketData(BookStatus bookStatus) {
+		ArrayList<ClientHandler> handlers = greeter.getAllHandlers();
+		for(ClientHandler handler : handlers) {
+			handler.sendMarketData(bookStatus);
+		}
 		
 	}
 	
