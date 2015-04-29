@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 
-import model.BookStatus;
+import models.BookStatus;
 import models.Message;
 import models.OpCodes;
 import models.Order;

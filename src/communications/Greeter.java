@@ -10,8 +10,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import model.BookStatus;
 import model.Librarian;
+import models.BookStatus;
 import models.Instrument;
 
 import com.google.gson.Gson;

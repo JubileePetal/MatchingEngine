@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import communications.ClientHandler;
 import communications.Greeter;
-import model.BookStatus;
+import models.BookStatus;
 import models.OpCodes;
 import models.Order;
 import models.Trade;
