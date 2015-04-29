@@ -39,11 +39,13 @@ public class Matcher implements Runnable {
 	
 	public void processOrder() {
 		
+		
 		Order order = currentOrderBook.getFirstPending();
 		int type = order.isBuyOrSell();
 		boolean quantityRemains = true;
 		
-		System.out.println("got order: price: " + order.getPrice() + " quantity: " + order.getQuantity());
+		System.out.println("got order: price: " + order.getPrice() + " quantity: " + order.getQuantity() + "buy or sell: " + order.isBuyOrSell());
+
 		
 		while(currentOrderBook.canMatch(order, type) && quantityRemains) {
 			System.out.println("match is possible");
@@ -51,7 +53,7 @@ public class Matcher implements Runnable {
 		}
 		
 		if(quantityRemains) {
-			
+
 			if(type == OpCodes.BUY_ORDER) {
 				currentOrderBook.addToBuyOrders(order);
 				
@@ -69,6 +71,7 @@ public class Matcher implements Runnable {
 		bookStatus.generateBuyLevels(currentOrderBook.getBuyOrders());
 		bookStatus.generateSellLevels(currentOrderBook.getSellOrders());
 		tradeProcessor.broadCastMarketData(bookStatus);
+		System.out.println("Sent market data, buy: " + currentOrderBook.getBuyOrders().size() + " sell: " + currentOrderBook.getSellOrders().size());
 	}
 	
 	public Order getMatchedOrder(int myType) {

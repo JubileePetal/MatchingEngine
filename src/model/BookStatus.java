@@ -32,9 +32,24 @@ public class BookStatus {
 			Order first = set.pollFirst();	
 			double price = first.getPrice();
 			int quantity = first.getQuantity();
-			while(set.first().getPrice() == price) {
-				quantity = quantity + set.pollFirst().getQuantity();
+			
+			boolean lookingForMore = true;
+			
+			while(lookingForMore) {
+				
+				if(!set.isEmpty()) {
+					
+					first = set.first();
+					if(first.getPrice() == price) {
+						quantity = quantity + set.pollFirst().getQuantity();
+					} else {
+						lookingForMore = false;
+					}
+				} else {
+					lookingForMore = false;
+				}
 			}
+			
 			Level level = new Level();
 			level.setPrice(price);
 			level.setQuantity(quantity);
