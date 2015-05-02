@@ -60,7 +60,9 @@ public class Greeter implements Runnable {
 	@Override
 	public void run() {
 		
+		
 		createWelcomeSocket();
+		System.out.println("Server is up!");
 		
 		while(true){
 			
