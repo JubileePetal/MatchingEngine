@@ -142,7 +142,7 @@ public class Matcher implements Runnable {
 				
 			} 		
 		}
-		
+		processMarketData(myOrder);
 		return myQuantityRemains;
 	}
 
@@ -150,8 +150,6 @@ public class Matcher implements Runnable {
 		myOrder.setPrice(matchedOrder.getPrice());
 		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
 		tradeProcessor.sendTrade(trade);
-		
-		processMarketData(myOrder);
 	}
 	
 	public boolean borrowOrderBook() {
