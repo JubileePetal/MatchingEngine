@@ -95,7 +95,6 @@ public class Greeter implements Runnable {
 		
 		Socket socket = null;
 		try {
-			System.out.println("Waiting for clients...");
 			 socket = welcomeSocket.accept();
 			 
 			

@@ -26,7 +26,6 @@ public class Matcher implements Runnable {
 	public void processOrderBook() {
 		
 		if(borrowOrderBook()) {
-			//System.out.println("Got this from the queue:" + currentInstrument);
 
 			while(currentOrderBook.ordersInQueue()) {
 				processOrder();
@@ -44,11 +43,9 @@ public class Matcher implements Runnable {
 		int type = order.isBuyOrSell();
 		boolean quantityRemains = true;
 		
-		System.out.println("got order: price: " + order.getPrice() + " quantity: " + order.getQuantity() + "buy or sell: " + order.isBuyOrSell());
 
 		
 		while(currentOrderBook.canMatch(order, type) && quantityRemains) {
-			System.out.println("match is possible");
 			quantityRemains = match(order);
 		}
 		
@@ -71,7 +68,6 @@ public class Matcher implements Runnable {
 		bookStatus.generateBuyLevels(currentOrderBook.getBuyOrders());
 		bookStatus.generateSellLevels(currentOrderBook.getSellOrders());
 		tradeProcessor.broadCastMarketData(bookStatus);
-		System.out.println("Sent market data, buy: " + currentOrderBook.getBuyOrders().size() + " sell: " + currentOrderBook.getSellOrders().size());
 	}
 	
 	public Order getMatchedOrder(int myType) {
@@ -113,13 +109,11 @@ public class Matcher implements Runnable {
 		Order matchedOrder = getMatchedOrder(myType);
 		int matchedQuantity = matchedOrder.getQuantity();
 		
-		System.out.println("matchedOrder: price: " + matchedOrder.getPrice() + " quantity: " + matchedOrder.getQuantity());
 		
 		Order orderClone;
 		
 		if(myQuantity == matchedQuantity) {
 			
-			System.out.println("Equal quantities");
 			
 			equalMatch(myOrder, matchedOrder);
 			
@@ -128,7 +122,6 @@ public class Matcher implements Runnable {
 		} else {
 			
 			if(myQuantity > matchedQuantity) {
-				System.out.println("My quantity > matched quantity");
 				orderClone = getClonedOrder(myOrder, matchedQuantity);
 				equalMatch(orderClone, matchedOrder);
 				
@@ -138,7 +131,6 @@ public class Matcher implements Runnable {
 				myQuantityRemains = true;
 				
 			} else if(myQuantity < matchedQuantity) {
-				System.out.println("My Quantity < matched quantity");
 				orderClone = getClonedOrder(matchedOrder, myQuantity);
 				equalMatch(myOrder, orderClone);
 				

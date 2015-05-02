@@ -22,7 +22,8 @@ public class Librarian implements Observer {
 	public void putInQueue(String abbreviation){
 		
 		
-		//System.out.println("Putting in queue...");
+
+		
 		synchronized(queue){
 			
 			queue.add(abbreviation);
@@ -31,7 +32,7 @@ public class Librarian implements Observer {
 	
 	public String getFirstInQueue(){
 		
-		//System.out.println("Getting from queue...");
+
 		String abbrev;
 		synchronized(queue){
 			
@@ -57,8 +58,6 @@ public class Librarian implements Observer {
 	public void update(Observable arg0, Object arg1) {
 
 			Order order = (Order)arg1;
-			System.out.println("Order ID in Librarian: " + order.getId());
-			System.out.println("Order Abbrev: " + order.getInstrument().getAbbreviation());
 			String key = order.getInstrument().getAbbreviation();
 			
 			OrderBook ob = library.get(key);
