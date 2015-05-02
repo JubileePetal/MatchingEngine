@@ -63,7 +63,6 @@ public class ClientHandler extends Observable implements Runnable {
 		switch (user.getUserType()) {
 			case OpCodes.TRADER:
 				greeter.addTrader(username, this);
-				System.out.println("Trader accepted: " + this.username);
 				userStatus = OpCodes.LOG_IN_ACCEPTED;
 				break;
 				
@@ -129,7 +128,6 @@ public class ClientHandler extends Observable implements Runnable {
 		
 		if(setupCommunicationTools()){
 			
-			System.out.println("Communication Tools up!");
 			
 			connected = true;
 			while(connected){
@@ -152,7 +150,6 @@ public class ClientHandler extends Observable implements Runnable {
 							break;
 							
 						case OpCodes.ORDER:
-							System.out.println("Got an order.");
 							Order order = unpackOrder(message);
 							order.setTimeEnteredSystem(System.currentTimeMillis());
 							update(order);

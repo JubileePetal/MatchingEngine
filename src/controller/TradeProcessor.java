@@ -18,7 +18,6 @@ public class TradeProcessor {
 	}
 		
 	public Trade createTrade(Order order1, Order order2){
-		System.out.println("creating trade");
 		Trade trade = new Trade();
 		if(order1.isBuyOrSell() == OpCodes.BUY_ORDER){
 			

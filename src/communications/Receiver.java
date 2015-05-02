@@ -70,7 +70,6 @@ public class Receiver {
 		try {
 			
 			 clientMessage = inFromClient.readLine();
-			 System.out.println("New message.");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
