@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import model.Librarian;
@@ -15,6 +16,7 @@ import models.BookStatus;
 import models.Instrument;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 
 public class Greeter implements Runnable {
@@ -27,22 +29,32 @@ public class Greeter implements Runnable {
 	private Librarian librarian;
 	private ArrayList<Instrument> instruments;
 	
+	private HashMap<String, BookStatus> marketData;
+	
 	/**NOT PRETTY*/
 	long orderIDCounter;
+	long tradeIDCounter;
 	
 	private ServerSocket welcomeSocket;
 
 	
 	public Greeter() {
 		
-		
+		marketData = new HashMap<String, BookStatus>();
 		
 		admins 			= new HashMap<String,ClientHandler>();
 		traders 		= new HashMap<String,ClientHandler>();	
 		isvrs 			= new HashMap<String,ClientHandler>();	
 		regulators		= new HashMap<String,ClientHandler>();	
 		orderIDCounter 	= 0;
+		tradeIDCounter  = 0;
 	}	
+	
+	public void addBookStatus(BookStatus bookStatus) {
+		synchronized(marketData) {
+			marketData.put(bookStatus.getInstrumentName(), bookStatus);
+		}
+	}
 
 	public void createWelcomeSocket(){
 		
@@ -136,6 +148,10 @@ public class Greeter implements Runnable {
 
 	public void setInstruments(ArrayList<Instrument> instruments) {
 		this.instruments = instruments;
+		
+		for(Instrument instrument : instruments) {
+			marketData.put(instrument.getName(), null);
+		}
 	}
 	
 	public synchronized long getUniqueOrderID(){
@@ -144,6 +160,14 @@ public class Greeter implements Runnable {
 		orderIDCounter++;
 		newOrderID = orderIDCounter;
 		return newOrderID;
+	}
+	
+	public synchronized long getUniqueTradeID(){
+		
+		long newTradeID;	
+		tradeIDCounter++;
+		newTradeID = tradeIDCounter;
+		return newTradeID;
 	}
 	
 	public ClientHandler getTrader(String traderUsername){
@@ -167,6 +191,17 @@ public class Greeter implements Runnable {
 			handlers.add(handler);
 		}
 		return handlers;
+	}
+
+	public BookStatus[] getMarketData() {
+		BookStatus[] statusOfBooks;
+		
+		synchronized(marketData) {
+			Object[] statuses = marketData.values().toArray();
+			statusOfBooks = Arrays.copyOf(statuses, statuses.length, BookStatus[].class);
+		}
+
+		return statusOfBooks;
 	}
 	
 }

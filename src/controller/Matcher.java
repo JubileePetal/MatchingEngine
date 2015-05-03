@@ -147,7 +147,10 @@ public class Matcher implements Runnable {
 	}
 
 	public void equalMatch(Order myOrder, Order matchedOrder) {
+		// Need to price promote my order with that of the
+		// order in the orderbook
 		myOrder.setPrice(matchedOrder.getPrice());
+		
 		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
 		tradeProcessor.sendTrade(trade);
 	}
