@@ -2,9 +2,14 @@ package tests;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.TreeSet;
+
 import model.Librarian;
 import model.OrderBook;
+import models.BookStatus;
 import models.Instrument;
+import models.OpCodes;
 import models.Order;
 
 import org.junit.Before;
@@ -55,6 +60,70 @@ public class MatcherTest {
 	}
 	
 	@Test
+	public void testGetClonedOrder() {
+		int testQuantity = 79;
+		Order buyOrder = OrderCollections.simpleBuyOrder();
+		buyOrder.setOrderQuantity(20);
+		Order clonedOrder = matcher.getClonedOrder(buyOrder, testQuantity);
+		
+		assertEquals(clonedOrder.getQuantity(), testQuantity);
+
+	}
+
+	public void testProcessMarketData() {
+		
+		Order buyOrderInBook = OrderCollections.simpleBuyOrder();
+		Order sellOrderInBook = OrderCollections.simpleSellOrder();
+		
+		obA.addToBuyOrders(buyOrderInBook);
+		obA.addToSellOrders(sellOrderInBook);
+		
+		matcher.borrowOrderBook();
+		BookStatus bookStatus = matcher.processMarketData("Ericsson B");
+		assertEquals(bookStatus.getInstrumentName(), "Ericsson B");
+		assertTrue(bookStatus.getBuyLevels().get(0).getPrice() == buyOrderInBook.getPrice());
+		assertTrue(bookStatus.getBuyLevels().get(0).getQuantity() == buyOrderInBook.getQuantity());
+		assertTrue(bookStatus.getSellLevels().get(0).getPrice() == sellOrderInBook.getPrice());
+		assertTrue(bookStatus.getSellLevels().get(0).getQuantity() == sellOrderInBook.getQuantity());
+		matcher.returnOrderBook();
+		
+	}
+	
+	@Test
+	public void testGetMatchedOrderSell() {
+		
+		int myType = OpCodes.SELL_ORDER;
+		
+		Order buyOrderInBook = OrderCollections.simpleBuyOrder();
+		Order sellOrderInBook = OrderCollections.simpleSellOrder();
+		
+		obA.addToBuyOrders(buyOrderInBook);
+		obA.addToSellOrders(sellOrderInBook);
+		
+		matcher.borrowOrderBook();
+		Order matchedOrder = matcher.getMatchedOrder(myType);
+		assertEquals(matchedOrder.isBuyOrSell(), OpCodes.BUY_ORDER);
+		matcher.returnOrderBook();
+	}
+	
+	@Test
+	public void testGetMatchedOrderBuy() {
+		
+		int myType = OpCodes.BUY_ORDER;
+		
+		Order buyOrderInBook = OrderCollections.simpleBuyOrder();
+		Order sellOrderInBook = OrderCollections.simpleSellOrder();
+		
+		obA.addToBuyOrders(buyOrderInBook);
+		obA.addToSellOrders(sellOrderInBook);
+		
+		matcher.borrowOrderBook();
+		Order matchedOrder = matcher.getMatchedOrder(myType);
+		assertEquals(matchedOrder.isBuyOrSell(), OpCodes.SELL_ORDER);
+		matcher.returnOrderBook();
+	}
+	
+	@Test
 	public void testCannotBorrow() {
 		
 		// librarian is set up with two books, 
@@ -66,9 +135,39 @@ public class MatcherTest {
 	}
 	
 	@Test
-	public void testCanReturn() {
+	public void testCanReturnOB() {
 		matcher.processOrderBook();
 		verify(matcher, times(1)).returnOrderBook();
+	}
+	
+	@Test
+	public void testPutMatchedSellOrderBack() {
+		
+		// Test that matcher puts a buy order back to it's
+		// proper place
+		
+		Order sellOrder = OrderCollections.simpleSellOrder();
+		matcher.borrowOrderBook();
+		matcher.putMatchedOrderBack(sellOrder);
+		Order order = matcher.getCurrentOrderBook().getSellOrders().last();
+		assertTrue(order.equals(sellOrder));
+		matcher.returnOrderBook();
+		
+	}
+	
+	@Test
+	public void testPutMatchedBuyOrderBack() {
+		
+		// Test that matcher puts a buy order back to it's
+		// proper place
+		
+		Order buyOrder = OrderCollections.simpleBuyOrder();
+		matcher.borrowOrderBook();
+		matcher.putMatchedOrderBack(buyOrder);
+		Order order = matcher.getCurrentOrderBook().getBuyOrders().last();
+		assertTrue(order.equals(buyOrder));
+		matcher.returnOrderBook();
+		
 	}
 	
 	@Test
@@ -167,8 +266,6 @@ public class MatcherTest {
 		matcher.returnOrderBook();
 	}
 	
-
-	
 	@Test
 	public void testMatchIsNotCalledIfSellEmpty() {
 		
@@ -236,24 +333,148 @@ public class MatcherTest {
 		matcher.returnOrderBook();		
 	}
 	
-/*	
 	@Test
-	public void testMatch() {
+	public void testMarketDataProcessedOnceIfNoQuantityRemains() {
 		
-		for(Order order : OrderCollections.getOrderListA()) {
-			order.setToBuyOrder();
-			obA.addToBuyOrders(order);
-			System.out.println("buy order: price: " + order.getPrice() + " quantity: " + order.getQuantity());
-		}
+		Order simpleSell = OrderCollections.simpleSellOrder();
+		obA.addToSellOrders(simpleSell);
 		
-		for(Order order : OrderCollections.getOrderListB()) {
-			order.setToSellOrder();
-			obA.addToQueue(order);
-			System.out.println("pending sell order: price: " + order.getPrice() + " quantity: " + order.getQuantity());
-		}
-		matcher.processOrderBook();
-		System.out.println("order in book price: " + obA.getFirstSell().getPrice());
+		Order simpleBuy = OrderCollections.simpleBuyOrder();
+		obA.addToQueue(simpleBuy);
+		
+		matcher.borrowOrderBook();
+		matcher.processOrder();
+		verify(matcher, times(1)).processMarketData(simpleBuy.getInstrument().getName());
+		matcher.returnOrderBook();		
 	}
-	*/
+	
+	@Test
+	public void testMarketDataProcessedTwiceIfQuantityRemains() {
+		
+		Order simpleSell = OrderCollections.simpleSellOrder();
+		simpleSell.setOrderQuantity(10);
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = OrderCollections.simpleBuyOrder();
+		simpleBuy.setOrderQuantity(20);
+		obA.addToQueue(simpleBuy);
+		
+		matcher.borrowOrderBook();
+		matcher.processOrder();
+		verify(matcher, times(2)).processMarketData(simpleBuy.getInstrument().getName());
+		matcher.returnOrderBook();		
+	}
+	
+	@Test
+	public void testMatchEqualMatch() {
+		
+		Order simpleSell = OrderCollections.simpleSellOrder();
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = OrderCollections.simpleBuyOrder();
+		
+		matcher.borrowOrderBook();
+		matcher.match(simpleBuy);
+		verify(matcher, times(1)).equalMatch(simpleBuy, simpleSell);
+		matcher.returnOrderBook();		
+	}
+	
+	@Test
+	public void testMatchMyQuantLarger() {
+		
+		int theirQuant = 10;
+		
+		Order simpleSell = OrderCollections.simpleSellOrder();
+		simpleSell.setOrderQuantity(theirQuant);
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = OrderCollections.simpleBuyOrder();
+		simpleBuy.setOrderQuantity(20);
+		
+		matcher.borrowOrderBook();
+		matcher.match(simpleBuy);
+		verify(matcher, times(1)).getClonedOrder(simpleBuy, theirQuant);
+		matcher.returnOrderBook();		
+	}
+	
+	@Test
+	public void testMatchMyQuantSmaller() {
+		
+		int myQuant = 10;
+		
+		Order simpleSell = OrderCollections.simpleSellOrder();
+		simpleSell.setOrderQuantity(20);
+		obA.addToSellOrders(simpleSell);
+		
+		Order simpleBuy = OrderCollections.simpleBuyOrder();
+		simpleBuy.setOrderQuantity(myQuant);
+		
+		matcher.borrowOrderBook();
+		matcher.match(simpleBuy);
+		verify(matcher, times(1)).getClonedOrder(simpleSell, myQuant);
+		matcher.returnOrderBook();		
+	}
+	
+	@Test
+	public void testFiveEqualMatches() {
+		
+		ArrayList<Order> fiveEqualBuy = OrderCollections.fiveEqualBuys();
+		ArrayList<Order> fiveEqualSell = OrderCollections.fiveEqualSell();
+		
+		for(Order order : fiveEqualBuy) {
+			obA.addToBuyOrders(order);
+		}
+		
+		for(Order order : fiveEqualSell) {
+			obA.addToQueue(order);
+		}
+		int myQuant = 10;
+		
+		matcher.processOrderBook();
+		for(int i = 0; i < 5; i++) {
+			verify(matcher, times(1)).equalMatch(fiveEqualSell.get(i), fiveEqualBuy.get(i));
+		}
 
+	}
+
+	@Test
+	public void testMatchTwice() {
+
+		
+		Order myBuy = OrderCollections.simpleBuyOrder();
+		myBuy.setOrderQuantity(20);
+		obA.addToQueue(myBuy);
+		
+		Order sellOne = OrderCollections.simpleSellOrder();
+		sellOne.setOrderQuantity(10);
+		obA.addToSellOrders(sellOne);
+		Order sellTwo = OrderCollections.simpleSellOrder();
+		sellTwo.setOrderQuantity(10);
+		obA.addToSellOrders(sellTwo);
+		
+		matcher.processOrderBook();
+		
+		verify(matcher, times(2)).match(myBuy);
+		
+	}
+	
+	@Test
+	public void testPartialMatch() {
+
+		
+		Order myBuy = OrderCollections.simpleBuyOrder();
+		myBuy.setOrderQuantity(10);
+		obA.addToQueue(myBuy);
+		
+		Order sellOne = OrderCollections.simpleSellOrder();
+		sellOne.setOrderQuantity(20);
+		obA.addToSellOrders(sellOne);
+		
+		matcher.processOrderBook();
+		
+		verify(matcher, times(1)).match(myBuy);
+		verify(matcher, times(1)).putMatchedOrderBack(sellOne);
+		
+	}
+	
 }
