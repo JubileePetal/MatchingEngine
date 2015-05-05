@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.net.Socket;
+import java.util.ArrayList;
 
 import model.Librarian;
 
@@ -17,6 +18,7 @@ import controller.Archiver;
 public class GreeterTest {
 
 	Greeter greeter;
+	Socket socket;
 	Librarian librarian;
 	ClientHandler ch;
 	Archiver archiver;
@@ -28,7 +30,7 @@ public class GreeterTest {
 	@Before
 	public void setUp(){
 		
-		Socket socket = mock(Socket.class);
+		socket = mock(Socket.class);
 		
 		username = "Starlight";
 		
@@ -71,4 +73,32 @@ public class GreeterTest {
 		assertEquals(greeter.getTrader(username),ch);
 	}
 
+	@Test
+	public void testGetAllHandlers(){
+		
+		ClientHandler handler1 = new ClientHandler(socket,greeter);
+		ClientHandler handler2 = new ClientHandler(socket,greeter);
+		ClientHandler handler3 = new ClientHandler(socket,greeter);
+		ClientHandler handler4 = new ClientHandler(socket,greeter);
+		
+		handler1.setUsername("Ariel");
+		handler2.setUsername("Pocahontas");	
+		handler3.setUsername("Jasmine");
+		handler4.setUsername("Belle");
+		
+		
+		greeter.addTrader(handler1.getUsername(), handler1);
+		greeter.addTrader(handler2.getUsername(), handler2);
+		greeter.addTrader(handler3.getUsername(), handler3);
+		greeter.addTrader(handler4.getUsername(), handler4);
+		
+		
+		ArrayList<ClientHandler> allHandlers = greeter.getAllHandlers();
+		assertNotNull(allHandlers);
+		assertEquals(allHandlers.size(), 4);
+		
+		
+		
+		
+	}
 }
