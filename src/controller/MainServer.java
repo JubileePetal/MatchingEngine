@@ -14,6 +14,9 @@ public class MainServer {
 			
 			int nrOfWorkers  = Integer.parseInt(args[0]);
 			
+			
+			
+			
 			Initializer initializer = new Initializer();
 			initializer.establishDependencies();
 			initializer.setupWorkPool(nrOfWorkers);
