@@ -1,6 +1,7 @@
 package model;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
@@ -11,12 +12,12 @@ import models.Order;
 public class Librarian implements Observer {
 	
 	private HashMap<String,OrderBook> library;
-	private PriorityQueue<String> queue;
+	private LinkedList<String> queue;
 		
 	public Librarian() {
 		
 		library = new HashMap<String, OrderBook>();
-		queue 	= new PriorityQueue<String>();
+		queue 	= new LinkedList<String>();
 	}
 	
 	public void putInQueue(String abbreviation){
@@ -35,9 +36,7 @@ public class Librarian implements Observer {
 
 		String abbrev;
 		synchronized(queue){
-			
 			abbrev =  queue.poll();
-			
 		}
 		
 		return abbrev;
