@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import model.OrderBook;
-import model.TreeSetCreator;
 import models.Order;
+import models.TreeSetCreator;
 
 import org.junit.Before;
 import org.junit.Test;
