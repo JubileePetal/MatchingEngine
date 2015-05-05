@@ -7,56 +7,52 @@ import communications.Greeter;
 import models.BookStatus;
 import models.OpCodes;
 import models.Order;
+import models.PartialTrade;
 import models.Trade;
 
 public class TradeProcessor {
 
 	private Greeter greeter;
 	
-	public TradeProcessor() {
-		// TODO Auto-generated constructor stub
-	}
+	public Trade createTrade(Order orderA, Order orderB) {
+
+		Order buyOrder = null;
+		Order sellOrder = null;
 		
-	public Trade createTrade(Order order1, Order order2){
-		Trade trade = new Trade();
-		if(order1.isBuyOrSell() == OpCodes.BUY_ORDER){
-			
-			setBuyerInfo(order1, trade);
-			setSellerInfo(order2, trade);
-			
-		}else{
-			
-			setBuyerInfo(order2, trade);
-			setSellerInfo(order1, trade);
-			
+		if(orderA.isBuyOrSell() == OpCodes.BUY_ORDER) {
+			buyOrder = orderA;
+			sellOrder = orderB;
+		} else {
+			buyOrder = orderB;
+			sellOrder = orderA;
 		}
 		
-		trade.setQuantity(order1.getQuantity());
-		trade.setPrice(order1.getPrice());
-		trade.setInstrument(order1.getInstrument());
-
+		long id = greeter.getUniqueTradeID();	
 		
+		PartialTrade buyPartial = createPartialTrade(buyOrder, id);
+		
+		PartialTrade sellPartial = createPartialTrade(sellOrder, id);
+		
+		Trade trade = new Trade();
+		trade.setTradeID(id);
+		trade.setBuyPartial(buyPartial);
+		trade.setSellPartial(sellPartial);
 		
 		return trade;
- 	}
+	}
+	
+	public PartialTrade createPartialTrade(Order order, long id) {
+		PartialTrade partialTrade = new PartialTrade();
+		partialTrade.setOrder(order);
+		partialTrade.setTradeID(id);
+		return partialTrade;
+	}
 	
 	public void orderPlacedInBook(Order order) {
 		ClientHandler owner = greeter.getTrader(order.getMyOwner());
 		owner.addOrder(order);
 	}
-	
-	private void setSellerInfo(Order sellOrder, Trade trade){
-		
-		trade.setSeller(sellOrder.getMyOwner());
-		trade.setSelOrderID(sellOrder.getId());
-	}
-	
-	private void setBuyerInfo(Order buyOrder, Trade trade){
-		
-		trade.setBuyer(buyOrder.getMyOwner());
-		trade.setBuyOrderID(buyOrder.getId());
-	}
-	
+
 	public Greeter getGreeter() {
 		return greeter;
 	}
@@ -66,16 +62,22 @@ public class TradeProcessor {
 	}
 	
 	public void sendTrade(Trade trade){
+	
+		sendPartialTrade(trade.getBuyPartial());
+		sendPartialTrade(trade.getSellPartial());
 		
-		ClientHandler seller = greeter.getTrader(trade.getSeller());
-		ClientHandler buyer  = greeter.getTrader(trade.getBuyer()); 
-		
-		seller.sendTrade(trade);
-		buyer.sendTrade(trade);
-		
+	}
+	
+	public void sendPartialTrade(PartialTrade partialTrade) {
+		String clientName = partialTrade.getOrder().getMyOwner();
+		ClientHandler clientHandler = greeter.getTrader(clientName);
+		if(clientHandler != null) {
+			clientHandler.sendPartialTrade(partialTrade);
+		}
 	}
 
 	public void broadCastMarketData(BookStatus bookStatus) {
+		greeter.addBookStatus(bookStatus);
 		ArrayList<ClientHandler> handlers = greeter.getAllHandlers();
 		for(ClientHandler handler : handlers) {
 			handler.sendMarketData(bookStatus);

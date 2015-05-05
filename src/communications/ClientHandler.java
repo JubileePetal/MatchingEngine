@@ -12,10 +12,12 @@ import models.BookStatus;
 import models.Message;
 import models.OpCodes;
 import models.Order;
+import models.PartialTrade;
 import models.Trade;
 import models.User;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
 
@@ -88,6 +90,11 @@ public class ClientHandler extends Observable implements Runnable {
 		
 		return userStatus;
 	}		
+
+	private String getMarketData() {
+		String json = gson.toJson(greeter.getMarketData());
+		return json;
+	}
 	
 	public String getValidInstruments(){
 		return gson.toJson(greeter.getInstruments());
@@ -105,14 +112,7 @@ public class ClientHandler extends Observable implements Runnable {
 		order.setId(greeter.getUniqueOrderID());
 		return order;
 	}
-	
-	public void sendTrade(Trade trade) {
-		
-		String json = gson.toJson(trade);
-		sender.sendToClient(OpCodes.TRADE, json);
-		
-	}
-	
+
 	public void addOrder(Order order) {
 		myOrders.add(order);
 		String json = gson.toJson(order);
@@ -142,7 +142,7 @@ public class ClientHandler extends Observable implements Runnable {
 						case OpCodes.LOG_IN:
 							
 							int userStatus = addUserToGreeter(message);	
-							sender.sendToClient(userStatus, getValidInstruments());						
+							sender.sendToClient(userStatus, getInitialization());						
 							break;
 							
 						case OpCodes.LOG_OUT:
@@ -169,9 +169,26 @@ public class ClientHandler extends Observable implements Runnable {
 		
 	}
 
+	private String getInitialization() {
+
+		String[] instrumentsAndMD = new String[2];
+		
+		instrumentsAndMD[0] = getValidInstruments();
+		instrumentsAndMD[1] = getMarketData();
+		
+		return gson.toJson(instrumentsAndMD);
+	}
+
 	public void sendMarketData(BookStatus bookStatus) {
 		String json = gson.toJson(bookStatus);
 		sender.sendToClient(OpCodes.MARKET_DATA, json);
+	}
+
+	// NEEDS TO BE WRITTEN!!!
+	public void sendPartialTrade(PartialTrade partialTrade) {
+		String json = gson.toJson(partialTrade);
+		sender.sendToClient(OpCodes.PARTIAL_TRADE, json);
+		
 	}
 
 
