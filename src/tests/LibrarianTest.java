@@ -59,6 +59,7 @@ public class LibrarianTest {
 		assertTrue(first.equals(librarian.getFirstInQueue()));
 		assertTrue(second.equals(librarian.getFirstInQueue()));
 		assertTrue(third.equals(librarian.getFirstInQueue()));
+		assertNull(librarian.getFirstInQueue());
 		
 	}
 	
@@ -73,6 +74,21 @@ public class LibrarianTest {
 		
 	}
 	
+	
+	@Test
+	public void testGetOrderBook(){
+		
+		Order order 		= OrderCollections.simpleBuyOrder();
+		Instrument inst 	= order.getInstrument();
+		inst.setAbbreviation("Test");
+		
+		librarian.addOrderBook(inst);
+		assertNotNull(librarian.getOrderBook("Test"));
+		
+		
+	}
+	
+	
 	@Test
 	public void testUpdate(){
 		
@@ -81,8 +97,9 @@ public class LibrarianTest {
 		ClientHandler ch	= new ClientHandler(socket,greeter);
 		
 		
-		Order order 		= new Order();
+		Order order 		= OrderCollections.simpleBuyOrder();
 		
+		librarian.addOrderBook(order.getInstrument());
 		ch.addObserver(librarian);
 		
 		

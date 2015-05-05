@@ -10,15 +10,15 @@ import models.TreeSetCreator;
 
 public class OrderBook  {
 
-	private TreeSet<Order> buyOrders;
-	private TreeSet<Order> sellOrders;
-	private LinkedList<Order> pendingOrders;
+	private TreeSet<Order> 		 buyOrders;
+	private TreeSet<Order>	 	 sellOrders;
+	private LinkedList<Order>	 pendingOrders;
 	
 	public OrderBook() {
 		
-		pendingOrders = new LinkedList<Order>();
-		buyOrders = TreeSetCreator.createBuyOrderSet();
-		sellOrders = TreeSetCreator.createSellOrderSet();
+		pendingOrders 	= new LinkedList<Order>();
+		buyOrders 		= TreeSetCreator.createBuyOrderSet();
+		sellOrders		= TreeSetCreator.createSellOrderSet();
 
 	}
 	

@@ -21,19 +21,18 @@ import com.google.gson.JsonElement;
 
 public class Greeter implements Runnable {
 	
-	/* rittre comment */
 	
 	private HashMap<String,ClientHandler> admins;
 	private HashMap<String,ClientHandler> traders;
 	private HashMap<String,ClientHandler> isvrs;
 	private HashMap<String,ClientHandler> regulators;
 	
-	private Librarian librarian;
-	private ArrayList<Instrument> instruments;
+	private Librarian 				librarian;
+	private ArrayList<Instrument> 	instruments;
 	
 	private HashMap<String, BookStatus> marketData;
 	
-	/**NOT PRETTY*/
+
 	long orderIDCounter;
 	long tradeIDCounter;
 	
@@ -201,8 +200,9 @@ public class Greeter implements Runnable {
 		BookStatus[] statusOfBooks;
 		
 		synchronized(marketData) {
-			Object[] statuses = marketData.values().toArray();
-			statusOfBooks = Arrays.copyOf(statuses, statuses.length, BookStatus[].class);
+			Object[] statuses 	= marketData.values().toArray();
+			statusOfBooks 		= Arrays
+					.copyOf(statuses, statuses.length, BookStatus[].class);
 		}
 
 		return statusOfBooks;
