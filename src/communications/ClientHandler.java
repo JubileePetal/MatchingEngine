@@ -107,7 +107,7 @@ public class ClientHandler extends Observable implements Runnable {
 	}
 	
 	public Order unpackOrder(Message message){
-		
+
 		Order order =  gson.fromJson(message.getJson(),Order.class);
 		order.setId(greeter.getUniqueOrderID());
 		return order;
