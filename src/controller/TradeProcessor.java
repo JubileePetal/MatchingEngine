@@ -16,22 +16,22 @@ public class TradeProcessor {
 	
 	public Trade createTrade(Order orderA, Order orderB) {
 
-		Order buyOrder = null;
+		Order buyOrder 	= null;
 		Order sellOrder = null;
 		
 		if(orderA.isBuyOrSell() == OpCodes.BUY_ORDER) {
-			buyOrder = orderA;
-			sellOrder = orderB;
+			buyOrder 	= orderA;
+			sellOrder	= orderB;
 		} else {
-			buyOrder = orderB;
-			sellOrder = orderA;
+			buyOrder 	= orderB;
+			sellOrder  	= orderA;
 		}
 		
 		long id = greeter.getUniqueTradeID();	
 		
-		PartialTrade buyPartial = createPartialTrade(buyOrder, id);
+		PartialTrade buyPartial 	= createPartialTrade(buyOrder, id);
 		
-		PartialTrade sellPartial = createPartialTrade(sellOrder, id);
+		PartialTrade sellPartial 	= createPartialTrade(sellOrder, id);
 		
 		Trade trade = new Trade();
 		trade.setTradeID(id);
