@@ -22,9 +22,6 @@ public class Librarian implements Observer {
 	
 	public void putInQueue(String abbreviation){
 		
-		
-
-		
 		synchronized(queue){
 			
 			queue.add(abbreviation);
