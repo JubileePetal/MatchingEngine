@@ -55,16 +55,17 @@ public class Matcher implements Runnable {
 				currentOrderBook.addToSellOrders(order);
 			}
 			tradeProcessor.orderPlacedInBook(order);
-			processMarketData(order);
+			BookStatus bookStatus = processMarketData(order.getInstrument().getName());
+			tradeProcessor.broadCastMarketData(bookStatus);
 		}
 	}
 	
-	public void processMarketData(Order order) {
+	public BookStatus processMarketData(String instrumentName) {
 
-		BookStatus bookStatus = new BookStatus(order.getInstrument().getName());
+		BookStatus bookStatus = new BookStatus(instrumentName);
 		bookStatus.generateBuyLevels(currentOrderBook.getBuyOrders());
 		bookStatus.generateSellLevels(currentOrderBook.getSellOrders());
-		tradeProcessor.broadCastMarketData(bookStatus);
+		return bookStatus;
 	}
 	
 	public Order getMatchedOrder(int myType) {
@@ -139,7 +140,8 @@ public class Matcher implements Runnable {
 				
 			} 		
 		}
-		processMarketData(myOrder);
+		BookStatus bookStatus = processMarketData(myOrder.getInstrument().getName());
+		tradeProcessor.broadCastMarketData(bookStatus);
 		return myQuantityRemains;
 	}
 
@@ -147,8 +149,8 @@ public class Matcher implements Runnable {
 		// Need to price promote my order with that of the
 		// order in the orderbook
 		myOrder.setPrice(matchedOrder.getPrice());
-		
 		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
+		
 		tradeProcessor.sendTrade(trade);
 	}
 	
@@ -167,16 +169,7 @@ public class Matcher implements Runnable {
 	}
 	
 	public void returnOrderBook() {
-
 		librarian.putInQueue(currentInstrument);
-	}
-
-	
-	public Librarian getLibrarian() {
-		return librarian;
-	}
-	public TradeProcessor getTradeProcessor() {
-		return tradeProcessor;
 	}
 	
 	public OrderBook getCurrentOrderBook() {
@@ -191,10 +184,17 @@ public class Matcher implements Runnable {
 		this.librarian = librarian;
 	}
 	
+	public Librarian getLibrarian() {
+		return librarian;
+	}
+	
 	public void setTradeProcessor(TradeProcessor tradeProcessor) {
 		this.tradeProcessor = tradeProcessor;
 	}
 	
+	public TradeProcessor getTradeProcessor() {
+		return tradeProcessor;
+	}
 }
 	
 	
