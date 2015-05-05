@@ -49,8 +49,15 @@ public class TradeProcessor {
 	}
 	
 	public void orderPlacedInBook(Order order) {
+		
 		ClientHandler owner = greeter.getTrader(order.getMyOwner());
-		owner.addOrder(order);
+		
+		try {
+			owner.addOrder(order);
+		} catch(NullPointerException e) {
+			return;
+		}
+
 	}
 
 	public Greeter getGreeter() {
@@ -77,6 +84,7 @@ public class TradeProcessor {
 	}
 
 	public void broadCastMarketData(BookStatus bookStatus) {
+
 		greeter.addBookStatus(bookStatus);
 		ArrayList<ClientHandler> handlers = greeter.getAllHandlers();
 		for(ClientHandler handler : handlers) {
