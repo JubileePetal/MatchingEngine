@@ -21,6 +21,8 @@ import com.google.gson.JsonElement;
 
 public class Greeter implements Runnable {
 	
+	/* rittre comment */
+	
 	private HashMap<String,ClientHandler> admins;
 	private HashMap<String,ClientHandler> traders;
 	private HashMap<String,ClientHandler> isvrs;
