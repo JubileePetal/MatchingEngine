@@ -42,7 +42,6 @@ public class Librarian implements Observer {
 	public void addOrderBook(Instrument inst){
 		
 		OrderBook newOrderBook = new OrderBook();
-		//TODO Setup orderbook stuff here
 		library.put(inst.getAbbreviation(), newOrderBook);
 		putInQueue(inst.getAbbreviation());
 	
@@ -53,10 +52,10 @@ public class Librarian implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 
-			Order order = (Order)arg1;
-			String key = order.getInstrument().getAbbreviation();
+			Order order		 = (Order)arg1;
+			String key 		 = order.getInstrument().getAbbreviation();
+			OrderBook ob	 = library.get(key);
 			
-			OrderBook ob = library.get(key);
 			ob.addToQueue(order);
 	}
 	
