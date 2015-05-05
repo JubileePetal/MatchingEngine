@@ -38,12 +38,9 @@ public class Matcher implements Runnable {
 	
 	public void processOrder() {
 		
-		
 		Order order = currentOrderBook.getFirstPending();
 		int type = order.isBuyOrSell();
 		boolean quantityRemains = true;
-		
-
 		
 		while(currentOrderBook.canMatch(order, type) && quantityRemains) {
 			quantityRemains = match(order);
@@ -63,7 +60,7 @@ public class Matcher implements Runnable {
 	}
 	
 	public void processMarketData(Order order) {
-		
+
 		BookStatus bookStatus = new BookStatus(order.getInstrument().getName());
 		bookStatus.generateBuyLevels(currentOrderBook.getBuyOrders());
 		bookStatus.generateSellLevels(currentOrderBook.getSellOrders());
