@@ -12,13 +12,8 @@ public class WorkPool {
 	private Librarian librarian;
 	private ArrayList<Matcher> workers;
 	
-
-	
-	/** PrincessOfTheUniverse **/
-	
 	public WorkPool() {
 		workers  = new ArrayList<Matcher>();
-		
 	}
 	
 	public void createWorkers(int nrOfWorkers){

@@ -1,12 +1,7 @@
 package communications;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,10 +9,6 @@ import java.util.HashMap;
 import model.Librarian;
 import models.BookStatus;
 import models.Instrument;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
 
 public class Greeter implements Runnable {
 	
@@ -32,12 +23,10 @@ public class Greeter implements Runnable {
 	
 	private HashMap<String, BookStatus> marketData;
 	
-
 	long orderIDCounter;
 	long tradeIDCounter;
 	
 	private ServerSocket welcomeSocket;
-
 	
 	public Greeter() {
 		
@@ -73,7 +62,6 @@ public class Greeter implements Runnable {
 	@Override
 	public void run() {
 		
-		
 		createWelcomeSocket();
 		System.out.println("Server is up!");
 		
@@ -90,12 +78,7 @@ public class Greeter implements Runnable {
 				(new Thread(newClientHandler)).start();
 				
 			}
-			
-
-			
-		}
-		
-		
+		}	
 	}
 	
 	public Librarian getLibrarian() {

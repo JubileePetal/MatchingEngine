@@ -1,11 +1,6 @@
 package communications;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observable;
 
 import models.BookStatus;
@@ -13,12 +8,9 @@ import models.Message;
 import models.OpCodes;
 import models.Order;
 import models.PartialTrade;
-import models.Trade;
 import models.User;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 
 
 
@@ -33,12 +25,10 @@ public class ClientHandler extends Observable implements Runnable {
 	private Sender sender;
 	private Receiver receiver;
 	private ArrayList<Order> myOrders;
-	//private HashMap<Long, Order> myOrders;
 	
 	public ClientHandler(Socket clientSocket, Greeter greetedBy){
 		
 		myOrders	 = new ArrayList<Order>();
-		//myOrders	 = new HashMap<Long, Order>();
 		greeter 	 = greetedBy;
 		socket 		 = clientSocket;
 		sender 		 = new Sender(this);
@@ -119,7 +109,6 @@ public class ClientHandler extends Observable implements Runnable {
 		myOrders.add(order);
 		String json = gson.toJson(order);
 		sender.sendToClient(OpCodes.ORDER_ADDED, json);
-		//sender.orderAdded(order);
 	}	
 	
 	public void setConnected(boolean connected) {
@@ -130,10 +119,8 @@ public class ClientHandler extends Observable implements Runnable {
 		
 		if(setupCommunicationTools()){
 			
-			
 			connected = true;
-			while(connected){
-				
+			while(connected){	
 				
 				Message message = receiver.readFromClient();
 				
@@ -155,7 +142,6 @@ public class ClientHandler extends Observable implements Runnable {
 							Order order = unpackOrder(message);
 							order.setTimeEnteredSystem(System.currentTimeMillis());
 							update(order);
-							//sender.confirmOrder(order.getId());
 							break;
 					
 						default:
@@ -163,9 +149,9 @@ public class ClientHandler extends Observable implements Runnable {
 					}	
 
 					
-				}//if
+				}
 				
-			}//while
+			}
 			
 		}
 		
@@ -186,7 +172,6 @@ public class ClientHandler extends Observable implements Runnable {
 		sender.sendToClient(OpCodes.MARKET_DATA, json);
 	}
 
-	// NEEDS TO BE WRITTEN!!!
 	public void sendPartialTrade(PartialTrade partialTrade) {
 		String json = gson.toJson(partialTrade);
 		sender.sendToClient(OpCodes.PARTIAL_TRADE, json);

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.PriorityQueue;
 
 import models.Instrument;
 import models.Order;
@@ -30,7 +29,6 @@ public class Librarian implements Observer {
 	
 	public String getFirstInQueue(){
 		
-
 		String abbrev;
 		synchronized(queue){
 			abbrev =  queue.poll();
@@ -44,9 +42,7 @@ public class Librarian implements Observer {
 		OrderBook newOrderBook = new OrderBook();
 		library.put(inst.getAbbreviation(), newOrderBook);
 		putInQueue(inst.getAbbreviation());
-	
-		
-		
+
 	}
 
 	@Override

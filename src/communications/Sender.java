@@ -3,14 +3,10 @@ package communications;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import com.google.gson.Gson;
 
 import models.Message;
-import models.OpCodes;
-import models.Order;
 
 public class Sender {
 	
