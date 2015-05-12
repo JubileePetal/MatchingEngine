@@ -1,24 +1,28 @@
 package model;
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
 import models.OpCodes;
 import models.Order;
+import models.Trade;
 import models.TreeSetCreator;
 
 
 public class OrderBook  {
 
-	private TreeSet<Order> 		 buyOrders;
-	private TreeSet<Order>	 	 sellOrders;
-	private LinkedList<Order>	 pendingOrders;
+	private TreeSet<Order> 	buyOrders;
+	private TreeSet<Order>	 	sellOrders;
+	private LinkedList<Order>	pendingOrders;
+	private ArrayList<Trade>	trades;
 	
 	public OrderBook() {
 		
 		pendingOrders 	= new LinkedList<Order>();
 		buyOrders 		= TreeSetCreator.createBuyOrderSet();
 		sellOrders		= TreeSetCreator.createSellOrderSet();
+		trades			= new ArrayList<Trade>();
 
 	}
 	
@@ -106,6 +110,14 @@ public class OrderBook  {
 	public TreeSet<Order> getSellOrders() {
 
 		return (TreeSet<Order>) sellOrders.clone();
+	}
+
+	public ArrayList<Trade> getTrades() {
+		return trades;
+	}
+
+	public void tradeMade(Trade trade) {
+		trades.add(trade);
 	}
 	
 
