@@ -11,10 +11,13 @@ public class Initializer {
 	private Greeter greeter;
 	private TradeProcessor tradeProcessor;
 	private Archiver archiver;
-	private ArrayList<Instrument> instruments;
-	
 	private Librarian librarian;
 	private WorkPool wp;
+	
+	
+	private ArrayList<Instrument> instruments;
+	
+	
 	
 	public Initializer() {
 		
