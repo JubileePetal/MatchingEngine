@@ -19,17 +19,17 @@ public class Archiver {
 		ArrayList<Instrument> instruments = new ArrayList<Instrument>();
 		
 		Instrument inst1 = new Instrument();
-		inst1.setAbbreviation("ERB");
-		inst1.setName("Ericsson B");
+		inst1.setAbbreviation("MLP");
+		inst1.setName("My Little Pony");
 		inst1.setType(OpCodes.STOCK);
 		
-		Instrument inst2 = new Instrument();
-		inst2.setAbbreviation("ICAA");
-		inst2.setName("ICA A");
-		inst2.setType(OpCodes.STOCK);
-	
+//		Instrument inst2 = new Instrument();
+//		inst2.setAbbreviation("ICAA");
+//		inst2.setName("ICA A");
+//		inst2.setType(OpCodes.STOCK);
+//	
 		instruments.add(inst1);
-		instruments.add(inst2);
+		//instruments.add(inst2);
 		/**********************************************************/
 		return instruments;
 	

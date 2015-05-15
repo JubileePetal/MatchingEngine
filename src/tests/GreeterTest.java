@@ -1,6 +1,7 @@
 package tests;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.net.Socket;
@@ -58,9 +59,8 @@ public class GreeterTest {
 	
 	@Test
 	public void testGetIDs(){
-		
-		assertNotEquals(greeter.getUniqueOrderID(), greeter.getUniqueOrderID());
-		assertNotEquals(greeter.getUniqueTradeID(), greeter.getUniqueTradeID());
+		assertThat(greeter.getUniqueOrderID(), is(not(greeter.getUniqueOrderID())));
+		assertThat(greeter.getUniqueOrderID(), is(not(greeter.getUniqueTradeID())));
 		
 	}
 	

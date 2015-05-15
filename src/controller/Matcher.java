@@ -150,7 +150,8 @@ public class Matcher implements Runnable {
 		// order in the orderbook
 		myOrder.setPrice(matchedOrder.getPrice());
 		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
-		
+		trade.setTradeMadeTime(System.currentTimeMillis());
+		currentOrderBook.tradeMade(trade);
 		tradeProcessor.sendTrade(trade);
 	}
 	
