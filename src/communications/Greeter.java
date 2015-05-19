@@ -9,6 +9,7 @@ import java.util.HashMap;
 import model.Librarian;
 import models.BookStatus;
 import models.Instrument;
+import models.Option;
 
 public class Greeter implements Runnable {
 	
@@ -20,6 +21,7 @@ public class Greeter implements Runnable {
 	
 	private Librarian 				librarian;
 	private ArrayList<Instrument> 	instruments;
+	private ArrayList<Option>		options;
 	
 	private HashMap<String, BookStatus> marketData;
 	
@@ -138,6 +140,10 @@ public class Greeter implements Runnable {
 		for(Instrument instrument : instruments) {
 			marketData.put(instrument.getName(), null);
 		}
+	}
+	
+	public void setOptions(ArrayList<Option> options){
+		this.options = options;
 	}
 	
 	public synchronized long getUniqueOrderID(){

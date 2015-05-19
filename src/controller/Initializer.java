@@ -62,6 +62,7 @@ public class Initializer {
 		getInstrumentsFromArchives();
 		getOptionsFromArchives();
 		greeter.setInstruments(instruments);
+		greeter.setOptions(options);
 		greeter.setLibrarian(librarian);
 		wp.setLibrarian(librarian);
 		tradeProcessor.setGreeter(greeter);
@@ -76,6 +77,11 @@ public class Initializer {
 		
 		
 		
+	}
+	
+	private ArrayList<Option> getOptions(String instrumentName){
+		
+		return null;
 	}
 
 
