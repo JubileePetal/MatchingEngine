@@ -4,7 +4,9 @@ package model;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
+
 import models.OpCodes;
+import models.Option;
 import models.Order;
 import models.Trade;
 import models.TreeSetCreator;
@@ -12,10 +14,11 @@ import models.TreeSetCreator;
 
 public class OrderBook  {
 
-	private TreeSet<Order> 	buyOrders;
+	private TreeSet<Order> 		buyOrders;
 	private TreeSet<Order>	 	sellOrders;
 	private LinkedList<Order>	pendingOrders;
 	private ArrayList<Trade>	trades;
+	private ArrayList<Option>	myOptions;
 	
 	public OrderBook() {
 		
@@ -119,6 +122,16 @@ public class OrderBook  {
 	public void tradeMade(Trade trade) {
 		trades.add(trade);
 	}
+
+	public ArrayList<Option> getMyOptions() {
+		return myOptions;
+	}
+
+	public void setMyOptions(ArrayList<Option> myOptions) {
+		this.myOptions = myOptions;
+	}
+	
+	
 	
 
 }

@@ -4,17 +4,22 @@ import java.util.ArrayList;
 
 import model.Librarian;
 import models.Instrument;
+import models.Option;
 import communications.Greeter;
 
 public class Initializer {
 	
-	private Greeter greeter;
-	private TradeProcessor tradeProcessor;
-	private Archiver archiver;
-	private ArrayList<Instrument> instruments;
+	private Greeter 		greeter;
+	private TradeProcessor 	tradeProcessor;
+	private Archiver 		archiver;
+	private Librarian 		librarian;
+	private WorkPool 		wp;
 	
-	private Librarian librarian;
-	private WorkPool wp;
+	
+	private ArrayList<Instrument> 	instruments;
+	private ArrayList<Option>		options;
+	
+	
 	
 	public Initializer() {
 		
@@ -29,6 +34,11 @@ public class Initializer {
 		
 		instruments = archiver.retrieveInstruments();
 		
+	}
+	
+	public void getOptionsFromArchives(){
+		
+		options		= archiver.retrieveOptions();
 	}
 	
 	public void startGreeter(){
@@ -50,7 +60,9 @@ public class Initializer {
 	public void establishDependencies(){
 		
 		getInstrumentsFromArchives();
+		getOptionsFromArchives();
 		greeter.setInstruments(instruments);
+		greeter.setOptions(options);
 		greeter.setLibrarian(librarian);
 		wp.setLibrarian(librarian);
 		tradeProcessor.setGreeter(greeter);
@@ -59,12 +71,29 @@ public class Initializer {
 		
 		for (Instrument i : instruments){
 			
-			librarian.addOrderBook(i);
+			ArrayList<Option> options = getOptions(i.getName());
+			librarian.addOrderBook(i, options);
 			
 		}
 		
 		
 		
+	}
+	
+	public ArrayList<Option> getOptions(String instrumentName){
+		
+		ArrayList<Option> specificOptions = new ArrayList<Option>();
+		
+		for(Option o : options){
+			
+			if(instrumentName.equals(o.getInstrument())){
+				
+				specificOptions.add(o);
+			}
+		}
+		
+		
+		return specificOptions;
 	}
 
 

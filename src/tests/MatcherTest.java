@@ -37,8 +37,8 @@ public class MatcherTest {
 		instrumentB.setAbbreviation("HMA");
 		
 		Librarian librarian = new Librarian();
-		librarian.addOrderBook(instrumentA);
-		librarian.addOrderBook(instrumentB);
+		librarian.addOrderBook(instrumentA, OptionsCollections.smallOptionsSet());
+		librarian.addOrderBook(instrumentB, OptionsCollections.smallOptionsSet());
 		
 		obA = librarian.getOrderBook(instrumentA.getAbbreviation());
 		obB = librarian.getOrderBook(instrumentB.getAbbreviation());

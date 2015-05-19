@@ -72,6 +72,17 @@ public class ClientHandler extends Observable implements Runnable {
 				greeter.addIsvr(username, this);
 				userStatus = OpCodes.LOG_IN_ACCEPTED;
 				break;
+				
+			case OpCodes.BOT:
+				/**Do bots have to be in a list to work?*/
+				userStatus = OpCodes.LOG_IN_ACCEPTED;
+				break;
+				
+			case OpCodes.ALGO_BOT:
+				/** Algo bot*/
+				userStatus = OpCodes.LOG_IN_ACCEPTED;
+				greeter.addTrader(username, this);
+				break;	
 			
 			default:
 				userStatus = OpCodes.LOG_IN_REJECTED;

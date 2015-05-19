@@ -1,11 +1,13 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 
 import models.Instrument;
+import models.Option;
 import models.Order;
 
 public class Librarian implements Observer {
@@ -37,9 +39,10 @@ public class Librarian implements Observer {
 		return abbrev;
 	}
 	
-	public void addOrderBook(Instrument inst){
+	public void addOrderBook(Instrument inst, ArrayList<Option> options){
 		
 		OrderBook newOrderBook = new OrderBook();
+		newOrderBook.setMyOptions(options);
 		library.put(inst.getAbbreviation(), newOrderBook);
 		putInQueue(inst.getAbbreviation());
 

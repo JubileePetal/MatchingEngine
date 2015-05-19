@@ -68,7 +68,7 @@ public class LibrarianTest {
 		
 		Instrument instrumentA = new Instrument();
 		instrumentA.setAbbreviation("ERB");
-		librarian.addOrderBook(instrumentA);
+		librarian.addOrderBook(instrumentA, OptionsCollections.smallOptionsSet());
 		verify(librarian, times(1)).putInQueue(instrumentA.getAbbreviation());
 		assertNotNull(librarian.getFirstInQueue());
 		
@@ -82,7 +82,7 @@ public class LibrarianTest {
 		Instrument inst 	= order.getInstrument();
 		inst.setAbbreviation("Test");
 		
-		librarian.addOrderBook(inst);
+		librarian.addOrderBook(inst, OptionsCollections.smallOptionsSet());
 		assertNotNull(librarian.getOrderBook("Test"));
 		
 		
@@ -99,7 +99,8 @@ public class LibrarianTest {
 		
 		Order order 		= OrderCollections.simpleBuyOrder();
 		
-		librarian.addOrderBook(order.getInstrument());
+		librarian.addOrderBook(order.getInstrument(), 
+				OptionsCollections.smallOptionsSet());
 		ch.addObserver(librarian);
 		
 		
