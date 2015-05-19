@@ -2,8 +2,10 @@ package controller;
 
 import java.util.ArrayList;
 
+import tests.OptionsCollections;
 import models.Instrument;
 import models.OpCodes;
+import models.Option;
 
 public class Archiver {
 
@@ -34,5 +36,9 @@ public class Archiver {
 		return instruments;
 	
 	}
-
+	
+	public ArrayList<Option> retrieveOptions(){
+		
+		return OptionsCollections.smallOptionsSet();
+	}
 }
