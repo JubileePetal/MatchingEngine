@@ -71,7 +71,8 @@ public class Initializer {
 		
 		for (Instrument i : instruments){
 			
-			librarian.addOrderBook(i);
+			ArrayList<Option> options = getOptions(i.getName());
+			librarian.addOrderBook(i, options);
 			
 		}
 		
@@ -79,9 +80,20 @@ public class Initializer {
 		
 	}
 	
-	private ArrayList<Option> getOptions(String instrumentName){
+	public ArrayList<Option> getOptions(String instrumentName){
 		
-		return null;
+		ArrayList<Option> specificOptions = new ArrayList<Option>();
+		
+		for(Option o : options){
+			
+			if(instrumentName.equals(o.getInstrument())){
+				
+				specificOptions.add(o);
+			}
+		}
+		
+		
+		return specificOptions;
 	}
 
 
