@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.LinkedList;
 
+import models.Option;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,25 +19,75 @@ public class AnalyzerTest {
 	// 9 decimals, to account for lack of calculator precision
 	private static final double DELTA = 0.000000001;
 	
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
+	@Test
+	public void testCNDF() {
+		assertEquals(0.779142452, Analyzer.N(0.7693), DELTA);
 	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	
+	@Test
+	public void testd1() {
+		assertEquals(0.7692626281, Analyzer.d1(42, 40, 0.1, 0.2, 0.5), DELTA);
 	}
-
-	@Before
-	public void setUp() throws Exception {
+	
+	@Test
+	public void testd2() {
+		assertEquals(0.6278412719, Analyzer.d2(0.7692626281, 0.2, 0.5), DELTA);
 	}
-
-	@After
-	public void tearDown() throws Exception {
+	
+	@Test
+	public void testGamma() {
+		Double S = 49d;
+		Double K = 50d;
+		Double r = 0.05;
+		Double sigma = 0.2;
+		Double T = 0.3846;
+		System.out.println(Analyzer.gamma(S, K, r, sigma, T));
+		assertEquals(0.0657380221, Analyzer.gamma(S, K, r, sigma, T), DELTA);
+	}
+	
+	@Test
+	public void testNPrime() {
+		Double d1 = 0.054173753;
+		assertEquals(0.3995281171, Analyzer.NPrime(d1), DELTA);
+	}
+	
+	@Test
+	public void testPutDelta() {
+		Double S = 49d;
+		Double K = 50d;
+		Double r = 0.05;
+		Double sigma = 0.2;
+		Double T = 0.3846;
+		assertEquals(-0.478398296, Analyzer.putDelta(S, K, r, sigma, T), DELTA);
+	}
+	
+	@Test
+	public void testCallDelta() {
+		Double S = 49d;
+		Double K = 50d;
+		Double r = 0.05;
+		Double sigma = 0.2;
+		Double T = 0.3846;
+		assertEquals(0.521601704, Analyzer.callDelta(S, K, r, sigma, T), DELTA);
+	}
+	
+	@Test
+	public void testPutOptionPrice() {
+		Double C = 4.759422997;
+		Double S = 42d;
+		Double K = 40d;
+		Double r = 0.1;
+		Double T = 0.5;
+		assertEquals(0.808599977, Analyzer.putOptionPrice(C, S, K, r, T), DELTA);
 	}
 	
 	@Test
 	public void testCallOptionPrice() {
-		Double price = Analyzer.callOptionPrice(null, null, null);
+		Option option = new Option();
+		option.setStrikePrice(40);
+		option.setTimeToMaturity(0.5);
+		Double price = Analyzer.callOptionPrice(42.0, 0.2, 0.1, option);
+		assertEquals(4.759422997, price, DELTA);
 	}
 	
 
