@@ -26,8 +26,14 @@ public class Archiver {
 		inst1.setName(OpNames.INSTRUMENT1);
 		inst1.setType(OpCodes.STOCK);
 		
+//		Instrument inst2 = new Instrument();
+//		inst2.setAbbreviation(OpNames.INSTRUMENT2_ABB);
+//		inst2.setName(OpNames.INSTRUMENT2);
+//		inst2.setType(OpCodes.STOCK);
+		
 
 		instruments.add(inst1);
+//		instruments.add(inst2);
 	
 		/**********************************************************/
 		return instruments;
