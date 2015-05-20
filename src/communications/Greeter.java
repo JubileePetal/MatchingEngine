@@ -130,6 +130,12 @@ public class Greeter implements Runnable {
 		regulators.put(username, client);
 	}
 
+	public void addAlgoBot(String username, ClientHandler client){
+		
+		traders.put(username, client);
+		
+	}
+	
 	public ArrayList<Instrument> getInstruments() {
 		return instruments;
 	}
@@ -144,6 +150,11 @@ public class Greeter implements Runnable {
 	
 	public void setOptions(ArrayList<Option> options){
 		this.options = options;
+	}
+	
+	public ArrayList<Option> getOptions(){
+		
+		return options;
 	}
 	
 	public synchronized long getUniqueOrderID(){

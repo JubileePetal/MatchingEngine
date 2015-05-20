@@ -16,14 +16,15 @@ import com.google.gson.Gson;
 
 public class ClientHandler extends Observable implements Runnable {
 
-	private Socket socket;
-	private Gson gson;
-	private boolean connected;
-	private Greeter greeter;
-	private String username;
+	private Socket 		socket;
+	private Gson 		gson;
+	private boolean 	connected;
+	private Greeter 	greeter;
+	private String 		username;
+	private Sender 		sender;
+	private Receiver 	receiver;
+	private boolean		iAmBot;
 	
-	private Sender sender;
-	private Receiver receiver;
 	private ArrayList<Order> myOrders;
 	
 	public ClientHandler(Socket clientSocket, Greeter greetedBy){
@@ -34,7 +35,7 @@ public class ClientHandler extends Observable implements Runnable {
 		sender 		 = new Sender(this);
 		receiver  	 = new Receiver(this);
 		gson 		 = new Gson();
-		
+		iAmBot		 = false;
 	}
 	
 	public boolean setupCommunicationTools(){
@@ -81,7 +82,8 @@ public class ClientHandler extends Observable implements Runnable {
 			case OpCodes.ALGO_BOT:
 				/** Algo bot*/
 				userStatus = OpCodes.LOG_IN_ACCEPTED;
-				greeter.addTrader(username, this);
+				greeter.addAlgoBot(username, this);
+				iAmBot = true;
 				break;	
 			
 			default:
@@ -99,6 +101,11 @@ public class ClientHandler extends Observable implements Runnable {
 	
 	public String getValidInstruments(){
 		return gson.toJson(greeter.getInstruments());
+	}
+	
+	public String getOptions(){
+		String json = gson.toJson(greeter.getOptions());
+		return json;
 	}
 	
 	public void update(Order order){
@@ -169,13 +176,20 @@ public class ClientHandler extends Observable implements Runnable {
 	}
 
 	private String getInitialization() {
+		
 
-		String[] instrumentsAndMD = new String[2];
+		String[] initData = new String[3];
+		initData[0] = getValidInstruments();
+		initData[1] = getMarketData();
+		if(iAmBot){
+			initData[2] = getOptions();
+		}
+
+
+
 		
-		instrumentsAndMD[0] = getValidInstruments();
-		instrumentsAndMD[1] = getMarketData();
 		
-		return gson.toJson(instrumentsAndMD);
+		return gson.toJson(initData);
 	}
 
 	public void sendMarketData(BookStatus bookStatus) {
