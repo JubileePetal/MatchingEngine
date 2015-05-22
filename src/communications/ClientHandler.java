@@ -48,8 +48,8 @@ public class ClientHandler extends Observable implements Runnable {
 	
 	public int addUserToGreeter(Message message){
 		
-		User user =  gson.fromJson(message.getJson(),User.class);
-		this.username = user.getUsername();
+		User user 		=  gson.fromJson(message.getJson(),User.class);
+		this.username 	=  user.getUsername();
 		
 		int userStatus;
 	
