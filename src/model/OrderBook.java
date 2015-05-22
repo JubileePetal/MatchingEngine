@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
+import analytics.Analyzer;
+
+import models.Analytics;
 import models.OpCodes;
 import models.Option;
 import models.Order;
@@ -14,18 +17,24 @@ import models.TreeSetCreator;
 
 public class OrderBook  {
 
-	private TreeSet<Order> 		buyOrders;
+	private TreeSet<Order> 	buyOrders;
 	private TreeSet<Order>	 	sellOrders;
 	private LinkedList<Order>	pendingOrders;
-	private ArrayList<Trade>	trades;
 	private ArrayList<Option>	myOptions;
+	private LinkedList<Double> spotPrices;
+	
+	private Double currentEwmaVol;
+	private Double currentRateOfReturn;
 	
 	public OrderBook() {
 		
 		pendingOrders 	= new LinkedList<Order>();
 		buyOrders 		= TreeSetCreator.createBuyOrderSet();
 		sellOrders		= TreeSetCreator.createSellOrderSet();
-		trades			= new ArrayList<Trade>();
+		spotPrices = new LinkedList<Double>();
+		
+		currentEwmaVol = 0d;
+		currentRateOfReturn = 0d;
 
 	}
 	
@@ -115,14 +124,6 @@ public class OrderBook  {
 		return (TreeSet<Order>) sellOrders.clone();
 	}
 
-	public ArrayList<Trade> getTrades() {
-		return trades;
-	}
-
-	public void tradeMade(Trade trade) {
-		trades.add(trade);
-	}
-
 	public ArrayList<Option> getMyOptions() {
 		return myOptions;
 	}
@@ -130,8 +131,36 @@ public class OrderBook  {
 	public void setMyOptions(ArrayList<Option> myOptions) {
 		this.myOptions = myOptions;
 	}
-	
-	
-	
 
+	public void tradeMade(double price) {
+		spotPrices.add(price);
+	}
+	
+	public Analytics generateAnalytics() {
+		
+		int testSize = 10;
+		Double lambda = 0.9;
+		
+		Analytics analytics = new Analytics();
+		Double SMA = Analyzer.simpleMovingAverage((LinkedList<Double>) spotPrices.clone(), testSize);
+		analytics.setSMA(SMA);
+		System.out.println("SMA: " + SMA);
+		
+		Double simpleVol = Analyzer.simpleVolatility((LinkedList<Double>) spotPrices.clone(), testSize);
+		analytics.setSimpleVol(simpleVol);
+		System.out.println("Simple Vol: " + simpleVol);
+		
+		currentEwmaVol = Analyzer.EWMA(currentEwmaVol, currentRateOfReturn, lambda);
+		
+		if(spotPrices.size() > 1) {
+			Double current = spotPrices.getLast();
+			Double previous = spotPrices.get(spotPrices.size() - 2);
+			currentRateOfReturn = (current - previous) / previous;
+		} else {
+			currentRateOfReturn = 0d;
+		}
+		
+		return null;
+	}
+	
 }
