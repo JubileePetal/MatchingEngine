@@ -42,13 +42,13 @@ public class AnalyzerTest {
 		Double sigma = 0.2;
 		Double T = 0.3846;
 		System.out.println(Analyzer.gamma(S, K, r, sigma, T));
-		assertEquals(0.0657380221, Analyzer.gamma(S, K, r, sigma, T), DELTA);
+		assertEquals(0.0655453772, Analyzer.gamma(S, K, r, sigma, T), DELTA);
 	}
 	
 	@Test
 	public void testNPrime() {
 		Double d1 = 0.054173753;
-		assertEquals(0.3995281171, Analyzer.NPrime(d1), DELTA);
+		assertEquals(0.3983573027, Analyzer.NPrime(d1), DELTA);
 	}
 	
 	@Test
