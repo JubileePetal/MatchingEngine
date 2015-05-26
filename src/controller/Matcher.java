@@ -156,6 +156,7 @@ public class Matcher implements Runnable {
 		tradeProcessor.sendTrade(trade);
 		currentOrderBook.tradeMade(trade.getBuyPartial().getOrder().getPrice());
 		Analytics analytics = currentOrderBook.generateAnalytics();
+		tradeProcessor.sendAnalytics(analytics);
 	}
 	
 	public boolean borrowOrderBook() {

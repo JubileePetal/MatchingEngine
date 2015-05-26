@@ -18,6 +18,7 @@ public class Greeter implements Runnable {
 	private HashMap<String,ClientHandler> traders;
 	private HashMap<String,ClientHandler> isvrs;
 	private HashMap<String,ClientHandler> regulators;
+	private HashMap<String,ClientHandler> analyticsClients;
 	
 	private Librarian 				librarian;
 	private ArrayList<Instrument> 	instruments;
@@ -37,7 +38,8 @@ public class Greeter implements Runnable {
 		admins 			= new HashMap<String,ClientHandler>();
 		traders 		= new HashMap<String,ClientHandler>();	
 		isvrs 			= new HashMap<String,ClientHandler>();	
-		regulators		= new HashMap<String,ClientHandler>();	
+		regulators		= new HashMap<String,ClientHandler>();
+		analyticsClients = new HashMap<String, ClientHandler>();
 		orderIDCounter 	= 0;
 		tradeIDCounter  = 0;
 	}	
@@ -212,8 +214,18 @@ public class Greeter implements Runnable {
 	
 
 	public void addAlgoBot(String username, ClientHandler client) {
-		traders.put(username, client);
+		analyticsClients.put(username, client);
+		//traders.put(username, client);
 		
+	}
+
+	public ArrayList<ClientHandler> getAnalysisClients() {
+		
+		ArrayList<ClientHandler> handlers = new ArrayList<ClientHandler>();
+		for(ClientHandler handler : analyticsClients.values()) {
+			handlers.add(handler);
+		}
+		return handlers;
 	}
 	
 }

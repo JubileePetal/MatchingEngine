@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import communications.ClientHandler;
 import communications.Greeter;
+import models.Analytics;
 import models.BookStatus;
 import models.OpCodes;
 import models.Order;
@@ -89,6 +90,14 @@ public class TradeProcessor {
 		ArrayList<ClientHandler> handlers = greeter.getAllHandlers();
 		for(ClientHandler handler : handlers) {
 			handler.sendMarketData(bookStatus);
+		}
+		
+	}
+
+	public void sendAnalytics(Analytics analytics) {
+		ArrayList<ClientHandler> handlers = greeter.getAnalysisClients();
+		for(ClientHandler handler : handlers) {
+			handler.sendAnalytics(analytics);
 		}
 		
 	}
