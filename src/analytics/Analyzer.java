@@ -54,7 +54,7 @@ public final class Analyzer {
 	
 	public static Double NPrime(Double x) {
 		
-		return (1/Math.sqrt(2*Math.PI)) * Math.exp(Math.pow(x, 2)/2);
+		return (1/Math.sqrt(2*Math.PI)) * Math.exp(-1*Math.pow(x, 2)/2);
 	}
 	
 	public static Double putDelta(double S, double K, double r, double sigma, double T) {

@@ -191,7 +191,7 @@ public class OrderBook  {
 					option.setDelta(delta);
 					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
 					option.setGamma(gamma);
-					//System.out.println("Call Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
+					System.out.println("Call Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
 
 				} else {
 
@@ -202,7 +202,7 @@ public class OrderBook  {
 					option.setDelta(delta);
 					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
 					option.setGamma(gamma);
-					//System.out.println("Put Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
+					System.out.println("Put Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
 				}
 
 			}
