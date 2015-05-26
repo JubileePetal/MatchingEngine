@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import models.Analytics;
 import models.BookStatus;
 import models.Message;
 import models.OpCodes;
@@ -17,12 +18,12 @@ import com.google.gson.Gson;
 public class ClientHandler extends Observable implements Runnable {
 
 	private Socket 		socket;
-	private Gson 		gson;
-	private boolean 	connected;
-	private Greeter 	greeter;
+	private Gson 			gson;
+	private boolean 		connected;
+	private Greeter 		greeter;
 	private String 		username;
 	private Sender 		sender;
-	private Receiver 	receiver;
+	private Receiver 		receiver;
 	private boolean		iAmBot;
 	
 	private ArrayList<Order> myOrders;
@@ -116,9 +117,7 @@ public class ClientHandler extends Observable implements Runnable {
 	
 	public Order unpackOrder(Message message){
 
-		Order order =  gson.fromJson(message.getJson(),Order.class);
-		
-		
+		Order order =  gson.fromJson(message.getJson(),Order.class);		
 		order.setId(greeter.getUniqueOrderID());
 		return order;
 	}
@@ -185,10 +184,6 @@ public class ClientHandler extends Observable implements Runnable {
 			initData[2] = getOptions();
 		}
 
-
-
-		
-		
 		return gson.toJson(initData);
 	}
 
@@ -209,6 +204,12 @@ public class ClientHandler extends Observable implements Runnable {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public void sendAnalytics(Analytics analytics) {
+		System.out.println("Sending!");
+		String json = gson.toJson(analytics);
+		sender.sendToClient(OpCodes.ANALYTICS, json);
 	}
 
 	

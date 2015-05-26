@@ -2,6 +2,7 @@ package controller;
 
 import model.Librarian;
 import model.OrderBook;
+import models.Analytics;
 import models.BookStatus;
 import models.OpCodes;
 import models.Order;
@@ -151,8 +152,11 @@ public class Matcher implements Runnable {
 		myOrder.setPrice(matchedOrder.getPrice());
 		Trade trade = tradeProcessor.createTrade(myOrder, matchedOrder);
 		trade.setTradeMadeTime(System.currentTimeMillis());
-		currentOrderBook.tradeMade(trade);
+
 		tradeProcessor.sendTrade(trade);
+		currentOrderBook.tradeMade(trade.getBuyPartial().getOrder().getPrice());
+		Analytics analytics = currentOrderBook.generateAnalytics();
+		tradeProcessor.sendAnalytics(analytics);
 	}
 	
 	public boolean borrowOrderBook() {

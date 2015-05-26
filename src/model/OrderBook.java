@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
+import analytics.Analyzer;
+
+import models.Analytics;
 import models.OpCodes;
 import models.Option;
 import models.Order;
@@ -14,18 +17,32 @@ import models.TreeSetCreator;
 
 public class OrderBook  {
 
-	private TreeSet<Order> 		buyOrders;
+	final static private Double RISK_FREE_RATE = 0.1;
+	final static private int TESTSIZE = 10;
+	final static private Double LAMBDA = 0.94;
+	
+	
+	private TreeSet<Order> 	buyOrders;
 	private TreeSet<Order>	 	sellOrders;
 	private LinkedList<Order>	pendingOrders;
-	private ArrayList<Trade>	trades;
 	private ArrayList<Option>	myOptions;
+	private LinkedList<Double> spotPrices;
+	
+	private Double currentEwmaVol;
+	private Double currentRateOfReturn;
+
 	
 	public OrderBook() {
 		
 		pendingOrders 	= new LinkedList<Order>();
 		buyOrders 		= TreeSetCreator.createBuyOrderSet();
 		sellOrders		= TreeSetCreator.createSellOrderSet();
-		trades			= new ArrayList<Trade>();
+		spotPrices = new LinkedList<Double>();
+		
+		currentEwmaVol = null;
+		currentRateOfReturn = null;
+		
+		
 
 	}
 	
@@ -115,14 +132,6 @@ public class OrderBook  {
 		return (TreeSet<Order>) sellOrders.clone();
 	}
 
-	public ArrayList<Trade> getTrades() {
-		return trades;
-	}
-
-	public void tradeMade(Trade trade) {
-		trades.add(trade);
-	}
-
 	public ArrayList<Option> getMyOptions() {
 		return myOptions;
 	}
@@ -130,8 +139,81 @@ public class OrderBook  {
 	public void setMyOptions(ArrayList<Option> myOptions) {
 		this.myOptions = myOptions;
 	}
-	
-	
-	
 
+	public void tradeMade(double price) {
+		spotPrices.add(price);
+	}
+	
+	public Analytics generateAnalytics() {
+		
+		Double current = spotPrices.getLast();
+		if(spotPrices.size() > 1) {
+			Double previous = spotPrices.get(spotPrices.size() - 2);
+			currentRateOfReturn = (current - previous) / previous;
+		}
+		try {
+			currentEwmaVol = Analyzer.EWMA(currentEwmaVol, currentRateOfReturn, LAMBDA);
+		} catch(NullPointerException e) {
+			if(currentRateOfReturn != null) {
+				currentEwmaVol = currentRateOfReturn;
+			}
+		}
+		
+		//System.out.println("Spot price: " + current);
+		//System.out.println("Rate of return: " + currentRateOfReturn);
+		//System.out.println("EWMA vol: " + currentEwmaVol);
+		
+		if(spotPrices.size() > 10) {
+			
+			Analytics analytics = new Analytics();
+			
+			analytics.setSpotPrice(current);
+			analytics.setRateOfReturn(currentRateOfReturn);
+			analytics.setEwmaVol(currentEwmaVol);
+			
+			Double SMA = Analyzer.simpleMovingAverage((LinkedList<Double>) spotPrices.clone(), TESTSIZE);
+			analytics.setSMA(SMA);
+			//System.out.println("SMA: " + SMA);
+			
+			Double simpleVol = Analyzer.simpleVolatility((LinkedList<Double>) spotPrices.clone(), TESTSIZE);
+			analytics.setSimpleVol(simpleVol);
+			//System.out.println("Simple Vol: " + simpleVol);
+			
+			for(Option option : myOptions) {
+				
+				Double price, delta, gamma;
+				
+				if(option.getType() == OpCodes.CALL_OPTION) {
+					
+					price = Analyzer.callOptionPrice(current, currentEwmaVol, RISK_FREE_RATE, option);
+					option.setTheoreticPrice(price);
+					delta = Analyzer.callDelta(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					option.setDelta(delta);
+					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					option.setGamma(gamma);
+					//System.out.println("Call Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
+
+				} else {
+
+					Double callPrice = Analyzer.callOptionPrice(current, currentEwmaVol, RISK_FREE_RATE, option);
+					price = Analyzer.putOptionPrice(callPrice, current, option.getStrikePrice(), RISK_FREE_RATE, option.getTimeToMaturity());
+					option.setTheoreticPrice(price);
+					delta = Analyzer.putDelta(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					option.setDelta(delta);
+					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					option.setGamma(gamma);
+					//System.out.println("Put Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
+				}
+
+			}
+			analytics.setOptions(myOptions);
+			//System.out.println("--------------------------------------------------------------------------");
+
+			return analytics;
+		}
+		
+		return null;
+		
+	}
+	
 }
