@@ -206,6 +206,7 @@ public class OrderBook  {
 
 			}
 			analytics.setOptions(myOptions);
+			System.out.println(instrumentName);
 			analytics.setInstrumentName(instrumentName);
 			//System.out.println("--------------------------------------------------------------------------");
 			
@@ -221,7 +222,9 @@ public class OrderBook  {
 	}
 
 	public void setInstrumentName(String instrumentName) {
+		
 		this.instrumentName = instrumentName;
+		
 	}
 	
 }
