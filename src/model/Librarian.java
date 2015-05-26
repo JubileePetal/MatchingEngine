@@ -43,6 +43,7 @@ public class Librarian implements Observer {
 		
 		OrderBook newOrderBook = new OrderBook();
 		newOrderBook.setMyOptions(options);
+		newOrderBook.setInstrumentName(inst.getName());
 		library.put(inst.getAbbreviation(), newOrderBook);
 		putInQueue(inst.getAbbreviation());
 

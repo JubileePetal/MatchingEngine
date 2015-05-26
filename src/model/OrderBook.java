@@ -20,8 +20,7 @@ public class OrderBook  {
 	final static private Double RISK_FREE_RATE = 0.1;
 	final static private int TESTSIZE = 10;
 	final static private Double LAMBDA = 0.94;
-	
-	
+
 	private TreeSet<Order> 	buyOrders;
 	private TreeSet<Order>	 	sellOrders;
 	private LinkedList<Order>	pendingOrders;
@@ -30,7 +29,7 @@ public class OrderBook  {
 	
 	private Double currentEwmaVol;
 	private Double currentRateOfReturn;
-
+	private String instrumentName;
 	
 	public OrderBook() {
 		
@@ -207,13 +206,22 @@ public class OrderBook  {
 
 			}
 			analytics.setOptions(myOptions);
+			analytics.setInstrumentName(instrumentName);
 			//System.out.println("--------------------------------------------------------------------------");
-
+			
 			return analytics;
 		}
 		
 		return null;
 		
+	}
+
+	public String getInstrumentName() {
+		return instrumentName;
+	}
+
+	public void setInstrumentName(String instrumentName) {
+		this.instrumentName = instrumentName;
 	}
 	
 }
