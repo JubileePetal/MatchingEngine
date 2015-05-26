@@ -206,7 +206,11 @@ public class OrderBook  {
 
 			}
 			analytics.setOptions(myOptions);
+<<<<<<< HEAD
 			System.out.println(instrumentName);
+=======
+
+>>>>>>> 54d0936d50a212a9a655c21a6f539f6ba726dbae
 			analytics.setInstrumentName(instrumentName);
 			//System.out.println("--------------------------------------------------------------------------");
 			

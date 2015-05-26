@@ -156,6 +156,11 @@ public class Matcher implements Runnable {
 		tradeProcessor.sendTrade(trade);
 		currentOrderBook.tradeMade(trade.getBuyPartial().getOrder().getPrice());
 		Analytics analytics = currentOrderBook.generateAnalytics();
+<<<<<<< HEAD
+=======
+
+		analytics.setInstrumentName(currentInstrument);
+>>>>>>> 54d0936d50a212a9a655c21a6f539f6ba726dbae
 		tradeProcessor.sendAnalytics(analytics);
 		
 	}
