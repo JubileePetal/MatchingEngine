@@ -20,6 +20,8 @@ public class OrderBook  {
 	final static private Double RISK_FREE_RATE = 0.1;
 	final static private int TESTSIZE = 10;
 	final static private Double LAMBDA = 0.94;
+	final static private Double ANNUALIZE = Math.sqrt(365);
+
 
 	private TreeSet<Order> 	buyOrders;
 	private TreeSet<Order>	 	sellOrders;
@@ -169,11 +171,13 @@ public class OrderBook  {
 			analytics.setSpotPrice(current);
 			analytics.setRateOfReturn(currentRateOfReturn);
 			analytics.setEwmaVol(currentEwmaVol);
-			
+			System.out.println("Ewma: " + ANNUALIZE*currentEwmaVol);
+			System.out.println("Spot: " + current);
 			Double SMA = Analyzer.simpleMovingAverage((LinkedList<Double>) spotPrices.clone(), TESTSIZE);
 			analytics.setSMA(SMA);
 			//System.out.println("SMA: " + SMA);
 			
+
 			Double simpleVol = Analyzer.simpleVolatility((LinkedList<Double>) spotPrices.clone(), TESTSIZE);
 			analytics.setSimpleVol(simpleVol);
 			//System.out.println("Simple Vol: " + simpleVol);
@@ -184,22 +188,22 @@ public class OrderBook  {
 				
 				if(option.getType() == OpCodes.CALL_OPTION) {
 					
-					price = Analyzer.callOptionPrice(current, currentEwmaVol, RISK_FREE_RATE, option);
+					price = Analyzer.callOptionPrice(current, ANNUALIZE*currentEwmaVol, RISK_FREE_RATE, option);
 					option.setTheoreticPrice(price);
-					delta = Analyzer.callDelta(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					delta = Analyzer.callDelta(current, option.getStrikePrice(), RISK_FREE_RATE, ANNUALIZE*currentEwmaVol, option.getTimeToMaturity());
 					option.setDelta(delta);
-					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, ANNUALIZE*currentEwmaVol, option.getTimeToMaturity());
 					option.setGamma(gamma);
 					System.out.println("Call Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
 
 				} else {
 
-					Double callPrice = Analyzer.callOptionPrice(current, currentEwmaVol, RISK_FREE_RATE, option);
+					Double callPrice = Analyzer.callOptionPrice(current, ANNUALIZE*currentEwmaVol, RISK_FREE_RATE, option);
 					price = Analyzer.putOptionPrice(callPrice, current, option.getStrikePrice(), RISK_FREE_RATE, option.getTimeToMaturity());
 					option.setTheoreticPrice(price);
-					delta = Analyzer.putDelta(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					delta = Analyzer.putDelta(current, option.getStrikePrice(), RISK_FREE_RATE, ANNUALIZE*currentEwmaVol, option.getTimeToMaturity());
 					option.setDelta(delta);
-					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, currentEwmaVol, option.getTimeToMaturity());
+					gamma = Analyzer.gamma(current, option.getStrikePrice(), RISK_FREE_RATE, ANNUALIZE*currentEwmaVol, option.getTimeToMaturity());
 					option.setGamma(gamma);
 					System.out.println("Put Option strike: " + option.getStrikePrice() + " T: " + option.getTimeToMaturity() + " price: " + price + " delta: " + delta + " gamma: " + gamma);
 				}

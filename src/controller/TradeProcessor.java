@@ -95,6 +95,7 @@ public class TradeProcessor {
 	}
 
 	public void sendAnalytics(Analytics analytics) {
+		
 		ArrayList<ClientHandler> handlers = greeter.getAnalysisClients();
 		for(ClientHandler handler : handlers) {
 			handler.sendAnalytics(analytics);
