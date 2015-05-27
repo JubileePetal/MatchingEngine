@@ -132,13 +132,6 @@ public class Greeter implements Runnable {
 		regulators.put(username, client);
 	}
 
-//	public void addAlgoBot(String username, ClientHandler client){
-//		
-//		
-//		
-//	}
-
-	
 	public ArrayList<Instrument> getInstruments() {
 		return instruments;
 	}
@@ -211,11 +204,9 @@ public class Greeter implements Runnable {
 		return statusOfBooks;
 	}
 	
-	
-
 	public void addAlgoBot(String username, ClientHandler client) {
 		analyticsClients.put(username, client);
-		//traders.put(username, client);
+		traders.put(username, client);
 		
 	}
 

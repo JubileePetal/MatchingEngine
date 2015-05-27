@@ -17,14 +17,14 @@ import com.google.gson.Gson;
 
 public class ClientHandler extends Observable implements Runnable {
 
-	private Socket 		socket;
+	private Socket 			socket;
 	private Gson 			gson;
 	private boolean 		connected;
 	private Greeter 		greeter;
-	private String 		username;
-	private Sender 		sender;
+	private String 			username;
+	private Sender 			sender;
 	private Receiver 		receiver;
-	private boolean		iAmBot;
+	private boolean			iAmBot;
 	
 	private ArrayList<Order> myOrders;
 	
