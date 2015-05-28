@@ -7,6 +7,7 @@ import models.Analytics;
 import models.BookStatus;
 import models.Message;
 import models.OpCodes;
+import models.OpNames;
 import models.Order;
 import models.PartialTrade;
 import models.User;
@@ -156,6 +157,9 @@ public class ClientHandler extends Observable implements Runnable {
 							break;
 							
 						case OpCodes.ORDER:
+							if(this.username.equals(OpNames.ALGORITHM_BOT)){
+								System.out.println("Got order from bot!!");
+							}
 							Order order = unpackOrder(message);
 							order.setTimeEnteredSystem(System.currentTimeMillis());
 							update(order);
