@@ -207,6 +207,7 @@ public class Greeter implements Runnable {
 	public void addAlgoBot(String username, ClientHandler client) {
 		analyticsClients.put(username, client);
 		traders.put(username, client);
+
 		
 	}
 
